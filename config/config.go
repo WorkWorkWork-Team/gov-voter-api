@@ -9,8 +9,13 @@ import (
 )
 
 type Config struct {
-	Env      string
-	GIN_MODE string `envconfig:"GIN_MODE" default:"release"`
+	Env            string
+	GIN_MODE       string `envconfig:"GIN_MODE" default:"release"`
+	MYSQL_HOSTNAME string `envconfig:"MYSQL_HOSTNAME"`
+	MYSQL_PORT     string `envconfig:"MYSQL_PORT"`
+	MYSQL_USERNAME string `envconfig:"MYSQL_USERNAME"`
+	MYSQL_PASSWORD string `envconfig:"MYSQL_PASSWORD"`
+	MYSQL_DATABASE string `envconfig:"MYSQL_DATABASE"`
 }
 
 func Load() Config {
