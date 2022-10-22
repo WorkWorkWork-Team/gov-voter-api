@@ -1,0 +1,24 @@
+version: '3.6'
+
+services:
+    db:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: mydb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user
+
+        volumes:
+            - ./schemas/province.sql:/docker-entrypoint-initdb.d/01_province.sql
+            - ./schemas/population.sql:/docker-entrypoint-initdb.d/02_population.sql
+            - ./data/populationData.sql:/docker-entrypoint-initdb.d/04_populationData.sql
+            - ./data/provinceData.sql:/docker-entrypoint-initdb.d/03_provinceData.sql
+
+    adminer:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - 8080:80
