@@ -1,6 +1,11 @@
 name: Run Test
 
-on: pull_request
+on:
+  push:
+    branches:
+      - "develop"
+      - "master"
+  pull_request:
 
 jobs:
   run-test:
@@ -12,6 +17,18 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: "^1.19"
+
+      - name: Install Test Dependency
+        shell: bash
+        run: |
+          go install github.com/onsi/ginkgo/v2/ginkgo
+          go get github.com/onsi/gomega/...
+
+      # Run all test in Repo
+      - name: Install Go Dependency
+        shell: bash
+        run: |
+          go mod tidy
 
       # Run all test in Repo
       - name: Run Test
