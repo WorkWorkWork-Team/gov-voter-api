@@ -16,3 +16,6 @@
 
 # Ignore ENV file
 .env
+
+# Ignore Mac .DS_Store
+*.DS_Store
