@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Env      string
-	GIN_MODE string `envconfig:"GIN_MODE"`
+	GIN_MODE string `envconfig:"GIN_MODE" default:"release"`
 }
 
 func Load() Config {
