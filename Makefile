@@ -1,5 +1,5 @@
 run:
-  ENV=dev go run main.go
+	ENV=dev go run main.go
 
 build-db-linux:
 	docker run --name mysql-dev -d \
