@@ -1,6 +1,5 @@
 run:
-	docker run -i -t -p=3306:3306 dev/href-counter:latest
-#	ENV=dev go run main.go
+  ENV=dev go run main.go
 
 build-db-linux:
 	docker run --name mysql-dev -d \
@@ -21,3 +20,6 @@ build-db-window:
 
 build-php-admin:
 	docker run --name phpmyadmin -d --link mysql-dev:db -p 8080:80 phpmyadmin/phpmyadmin
+
+unit-test:
+	ginkgo -r

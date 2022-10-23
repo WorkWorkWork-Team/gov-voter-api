@@ -1,0 +1,37 @@
+name: Run Test
+
+on:
+  push:
+    branches:
+      - "develop"
+      - "master"
+  pull_request:
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      # Fetch all repository details (Including tag for semver).
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "^1.19"
+
+      - name: Install Test Dependency
+        shell: bash
+        run: |
+          go install github.com/onsi/ginkgo/v2/ginkgo
+          go get github.com/onsi/gomega/...
+
+      # Run all test in Repo
+      - name: Install Go Dependency
+        shell: bash
+        run: |
+          go mod tidy
+
+      # Run all test in Repo
+      - name: Run Test
+        shell: bash
+        run: |
+          make unit-test
