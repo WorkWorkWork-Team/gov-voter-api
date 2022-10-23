@@ -18,7 +18,7 @@ start-dev-db-window:
         -v %cd%/database:/docker-entrypoint-initdb.d \
         mysql:latest
 
-build-php-admin:
+start-dev-php-admin:
 	docker run --name phpmyadmin -d --link mysql-dev:db -p 8080:80 phpmyadmin/phpmyadmin
 
 unit-test:
