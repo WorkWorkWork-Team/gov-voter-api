@@ -12,7 +12,7 @@ VALUES
 
 INSERT INTO Population
 VALUES
-    (1234567891234, 1234, 'Somsri', 'MairuMairu', '2015-12-17', 'Thai', 1);
+    (1234567891234, "1234AB", 'Somsri', 'MairuMairu', '2015-12-17', 'Thai', 1);
 
 INSERT INTO ApplyVote
 VALUES

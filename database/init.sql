@@ -4,14 +4,14 @@ USE devDB
 CREATE TABLE Province
 (
     ProvinceID INTEGER,
-    ProvinceName VARCHAR(255),
+    Name VARCHAR(255),
     PRIMARY KEY (ProvinceID)
 );
 
 CREATE TABLE District
 (
     DistrictID INTEGER,
-    DistrictName VARCHAR(255),
+    Name VARCHAR(255),
     ProvinceID INTEGER,
     CONSTRAINT fk_province FOREIGN KEY (ProvinceID) REFERENCES Province(ProvinceID),
     PRIMARY KEY (DistrictID)
@@ -20,7 +20,7 @@ CREATE TABLE District
 CREATE TABLE Population
 (
     CitizenID BIGINT,
-    LazerID INTEGER,
+    LazerID VARCHAR(255),
     Name VARCHAR(255),
     Lastname VARCHAR(255),
     Birthday DATE,
@@ -32,8 +32,8 @@ CREATE TABLE Population
 
 CREATE TABLE ApplyVote
 (
-    UUID INTEGER,
+    ID INTEGER,
     CitizenID BIGINT,
     CONSTRAINT fk_citizen FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
-    PRIMARY KEY (UUID)
+    PRIMARY KEY (ID)
 );
