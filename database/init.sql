@@ -11,6 +11,7 @@ CREATE TABLE Province
 CREATE TABLE District
 (
     DistrictID INTEGER,
+    DistrictName VARCHAR(255),
     ProvinceID INTEGER,
     CONSTRAINT fk_province FOREIGN KEY (ProvinceID) REFERENCES Province(ProvinceID),
     PRIMARY KEY (DistrictID)
@@ -18,7 +19,7 @@ CREATE TABLE District
 
 CREATE TABLE Population
 (
-    CitizenID INTEGER,
+    CitizenID BIGINT,
     LazerID INTEGER,
     Name VARCHAR(255),
     Lastname VARCHAR(255),
@@ -32,7 +33,7 @@ CREATE TABLE Population
 CREATE TABLE ApplyVote
 (
     UUID INTEGER,
-    CitizenID INTEGER,
+    CitizenID BIGINT,
     CONSTRAINT fk_citizen FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (UUID)
 );
