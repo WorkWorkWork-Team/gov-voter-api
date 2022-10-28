@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/WorkWorkWork-Team/common-go/databasemysql"
-	"github.com/WorkWorkWork-Team/common-go/jwtservice"
 	"github.com/WorkWorkWork-Team/gov-voter-api/config"
 	"github.com/WorkWorkWork-Team/gov-voter-api/handler"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
@@ -22,7 +21,7 @@ func init() {
 
 func main() {
 	// New .
-	jwtService := jwtservice.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, appConfig.JWT_TTL*time.Second)
+	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, appConfig.JWT_TTL*time.Second)
 	mysql, err := databasemysql.NewDbConnection(databasemysql.Config{
 		Hostname:     fmt.Sprint(appConfig.MYSQL_HOSTNAME, ":", appConfig.MYSQL_PORT),
 		Username:     appConfig.MYSQL_USERNAME,

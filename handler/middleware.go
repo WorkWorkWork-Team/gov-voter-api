@@ -3,13 +3,13 @@ package handler
 import (
 	"net/http"
 
-	"github.com/WorkWorkWork-Team/common-go/jwtservice"
+	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/sirupsen/logrus"
 )
 
-func AuthorizeJWT(jwtService jwtservice.JWTService) gin.HandlerFunc {
+func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		const BEARER_SCHEMA = "Bearer "
 		authHeader := c.GetHeader("Authorization")

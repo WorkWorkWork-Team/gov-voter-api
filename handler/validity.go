@@ -1,17 +1,16 @@
 package handler
 
 import (
-	"github.com/WorkWorkWork-Team/common-go/jwtservice"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
 )
 
 type validityHandler struct {
-	jwtService jwtservice.JWTService
+	jwtService service.JWTService
 	service    service.ValidityService
 }
 
-func NewValidityHandler(jwtService jwtservice.JWTService, service service.ValidityService) validityHandler {
+func NewValidityHandler(jwtService service.JWTService, service service.ValidityService) validityHandler {
 	return validityHandler{
 		jwtService: jwtService,
 		service:    service,

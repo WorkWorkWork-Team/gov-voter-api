@@ -3,15 +3,15 @@ package handler
 import (
 	"net/http"
 
-	"github.com/WorkWorkWork-Team/common-go/jwtservice"
+	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
 )
 
 type devHandler struct {
-	jwtService jwtservice.JWTService
+	jwtService service.JWTService
 }
 
-func NewDevHandler(jwtService jwtservice.JWTService) devHandler {
+func NewDevHandler(jwtService service.JWTService) devHandler {
 	return devHandler{
 		jwtService: jwtService,
 	}
