@@ -31,28 +31,28 @@ func NewJWTService(secretKey string, issuer string, ttl time.Duration) JWTServic
 	}
 }
 
-func (service *jwtServices) GenerateToken(citizenID string) (string, error) {
+func (s *jwtServices) GenerateToken(citizenID string) (string, error) {
 	claims := &authCustomClaims{
 		citizenID,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(service.ttl).Unix(),
-			Issuer:    service.issuer,
+			ExpiresAt: time.Now().Add(s.ttl).Unix(),
+			Issuer:    s.issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	//encoded string
-	t, err := token.SignedString([]byte(service.secretKey))
+	t, err := token.SignedString([]byte(s.secretKey))
 	return t, err
 }
 
-func (service *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
+func (s *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
 			return nil, errors.New(fmt.Sprint("Invalid token", token.Header["alg"]))
 		}
-		return []byte(service.secretKey), nil
+		return []byte(s.secretKey), nil
 	})
 
 }

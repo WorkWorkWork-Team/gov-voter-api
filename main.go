@@ -21,7 +21,7 @@ func init() {
 
 func main() {
 	// New .
-	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, appConfig.JWT_TTL*time.Second)
+	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	mysql, err := databasemysql.NewDbConnection(databasemysql.Config{
 		Hostname:     fmt.Sprint(appConfig.MYSQL_HOSTNAME, ":", appConfig.MYSQL_PORT),
 		Username:     appConfig.MYSQL_USERNAME,

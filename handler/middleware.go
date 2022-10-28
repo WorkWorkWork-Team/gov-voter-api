@@ -14,21 +14,30 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		const BEARER_SCHEMA = "Bearer "
 		authHeader := c.GetHeader("Authorization")
 		if len(authHeader) < len(BEARER_SCHEMA) {
-			logrus.Warn("Header is not containing any Bearer key.")
-			c.AbortWithStatus(http.StatusUnauthorized)
+			errMessage := "Header is not containing any Bearer key."
+			logrus.Warn(errMessage)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": errMessage,
+			})
 			return
 		}
 		tokenString := authHeader[len(BEARER_SCHEMA):]
 		token, err := jwtService.ValidateToken(tokenString)
 		if err != nil {
 			logrus.Error(err)
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 
 		if !token.Valid {
-			logrus.Warn("Cannot validate token ", tokenString)
-			c.AbortWithStatus(http.StatusUnauthorized)
+			errMessage := "Cannot validate token "
+			logrus.Warn("Cannot validate token ", errMessage)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": errMessage,
+			})
+			return
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
