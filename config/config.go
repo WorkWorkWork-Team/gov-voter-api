@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Env            string
 	GIN_MODE       string        `envconfig:"GIN_MODE" default:"release"`
+	LISTENING_PORT string        `envconfig:"LISTENING_PORT" default:"3000"`
 	MYSQL_HOSTNAME string        `envconfig:"MYSQL_HOSTNAME"`
 	MYSQL_PORT     string        `envconfig:"MYSQL_PORT"`
 	MYSQL_USERNAME string        `envconfig:"MYSQL_USERNAME"`
