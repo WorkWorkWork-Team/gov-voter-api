@@ -23,5 +23,7 @@ func (d *devHandler) NewTestToken(g *gin.Context) {
 		g.Status(http.StatusInternalServerError)
 		return
 	}
-	g.String(200, token)
+	g.JSON(200, gin.H{
+		"token": token,
+	})
 }

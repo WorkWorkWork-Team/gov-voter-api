@@ -49,8 +49,8 @@ func main() {
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
-		server.Group("/dev")
-		server.GET("/token/:id/", devHandler.NewTestToken)
+		devGroup := server.Group("/dev")
+		devGroup.GET("/token/:id/", devHandler.NewTestToken)
 	}
 	server.Run(fmt.Sprint(":", appConfig.LISTENING_PORT))
 }
