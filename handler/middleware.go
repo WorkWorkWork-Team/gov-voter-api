@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/config"
@@ -49,6 +50,7 @@ func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.Ha
 				"message": errMessage,
 			})
 		}
-		logrus.Info(claims)
+		logrus.Debug(claims)
+		c.AddParam("CitizenID", fmt.Sprint(claims["CitizenID"]))
 	}
 }
