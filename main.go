@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/WorkWorkWork-Team/common-go/databasemysql"
+	"github.com/WorkWorkWork-Team/common-go/httpserver"
 	"github.com/WorkWorkWork-Team/gov-voter-api/config"
 	"github.com/WorkWorkWork-Team/gov-voter-api/handler"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
-	"github.com/gin-gonic/gin"
 )
 
 var appConfig config.Config
@@ -43,7 +43,7 @@ func main() {
 	validityHandler := handler.NewValidityHandler(jwtService, validityService)
 
 	// Init Gin.
-	server := gin.Default()
+	server := httpserver.NewHttpServer()
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
 
 	if appConfig.Env != "prod" {
