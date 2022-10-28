@@ -1,15 +1,17 @@
 package repository
 
-import "database/sql"
+import (
+	"github.com/jmoiron/sqlx"
+)
 
 type getUserInformation struct {
-	mysql *sql.DB
+	mysql *sqlx.DB
 }
 
 type GetUserInformationRepository interface {
 }
 
-func NewGetUserInformtaionRepostory(mysql *sql.DB) GetUserInformationRepository {
+func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository {
 	return &getUserInformation{
 		mysql: mysql,
 	}
