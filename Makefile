@@ -2,7 +2,7 @@ run:
 	ENV=dev go run main.go
 
 start-dev-db-linux:
-	docker run --name mysql-dev -d \
+	docker start mysql-dev || docker run --name mysql-dev -d \
         -p 3306:3306 \
         -e MYSQL_ROOT_PASSWORD=P@ssw0rd \
         --restart unless-stopped \
@@ -11,7 +11,7 @@ start-dev-db-linux:
 
 #not try yet
 start-dev-db-window:
-	docker run --name mysql-dev -d \
+	docker start mysql-dev || docker run --name mysql-dev -d \
         -p 3306:3306 \
         -e MYSQL_ROOT_PASSWORD=P@ssw0rd \
         --restart unless-stopped \
