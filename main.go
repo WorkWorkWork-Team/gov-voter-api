@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"os"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/WorkWorkWork-Team/gov-voter-api/handler"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
-	"github.com/gin-gonic/gin"
 )
 
 var appConfig config.Config
@@ -38,13 +38,16 @@ func main() {
 
 	// New Services
 	validityService := service.NewValidityService(applyVoteRepository)
+	applyvoteService := service.NewApplyvoteService(applyVoteRepository)
 
 	// New Handler
 	validityHandler := handler.NewValidityHandler(jwtService, validityService)
+	applyvoteHandler := handler.NewApplyVoteHandler(applyvoteService)
 
 	// Init Gin.
 	server := gin.Default()
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
+	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), applyvoteHandler.ApplyVote)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
