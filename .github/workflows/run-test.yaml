@@ -21,6 +21,9 @@ jobs:
       - name: Install Test Dependency
         shell: bash
         run: |
+          go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.3.1
+          go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.3.1
+          go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.3.1
           go install github.com/onsi/ginkgo/v2/ginkgo
           go get github.com/onsi/gomega/...
 
