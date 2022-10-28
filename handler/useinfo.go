@@ -3,24 +3,23 @@ package handler
 import (
 	"net/http"
 
-	"github.com/WorkWorkWork-Team/common-go/jwtservice"
+	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
 )
 
-type getinfomationHandler struct {
-	jwtgetuser jwtservice.JWTService
+type getinformationHandler struct {
+	service service.GetUserInformationService
 }
 
-func NewGetUserInformationHandler(jwtgetuser jwtservice.JWTService) getinfomationHandler {
-	return getinfomationHandler{
-		jwtgetuser: jwtgetuser,
+func NewGetUserInformationHandler(getInformation service.GetUserInformationService) getinformationHandler {
+	return getinformationHandler{
+		service: getInformation,
 	}
 }
 
-func (g *getinfomationHandler) getuserInfo(gi *gin.Context) {
-	_, err := g.jwtgetuser.ValidateToken(gi.Request.Header["Authorization"][1])
-	if err != nil {
-		gi.Status(http.StatusForbidden)
-		return
-	}
+func (g *getinformationHandler) GetuserInfo(gi *gin.Context) {
+	userInfo := g.service.GetUserInformation()
+	gi.JSON(http.StatusOK, gin.H{
+		"test": userInfo,
+	})
 }

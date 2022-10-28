@@ -6,10 +6,10 @@ type getUserInformation struct {
 	mysql *sql.DB
 }
 
-type GetUserInformation interface {
+type GetUserInformationRepository interface {
 }
 
-func NewGetUserInformtaion(mysql *sql.DB) GetUserInformation {
+func NewGetUserInformtaionRepostory(mysql *sql.DB) GetUserInformationRepository {
 	return &getUserInformation{
 		mysql: mysql,
 	}
