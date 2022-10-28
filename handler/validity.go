@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 type validityHandler struct {
@@ -19,5 +20,10 @@ func NewValidityHandler(jwtService service.JWTService, service service.ValidityS
 }
 
 func (v *validityHandler) Validity(g *gin.Context) {
-	logrus.Info(g.Param("CitizenID"))
+	result := v.service.CheckValidity(g.Param("CitizenID"))
+	if result {
+		g.Status(http.StatusOK)
+		return
+	}
+	g.Status(http.StatusBadRequest)
 }

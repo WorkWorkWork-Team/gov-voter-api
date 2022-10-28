@@ -1,6 +1,11 @@
 package service
 
-import "github.com/WorkWorkWork-Team/gov-voter-api/repository"
+import (
+	"errors"
+
+	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
+	"github.com/sirupsen/logrus"
+)
 
 type validityService struct {
 	applyVoteRepository repository.ApplyVoteRepository
@@ -17,5 +22,10 @@ func NewValidityService(applyVoteRepository repository.ApplyVoteRepository) Vali
 }
 
 func (v *validityService) CheckValidity(citizenID string) bool {
-	return false
+	logrus.Info("Start CheckValidity")
+	defer logrus.Info("End CheckValidity")
+
+	_, err := v.applyVoteRepository.GetApplyVoteByCitizenID(citizenID)
+	logrus.Info("GetApplyVoteByCitizenID focused err: ", err)
+	return errors.Is(err, repository.ErrNotFound)
 }

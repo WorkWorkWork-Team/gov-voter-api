@@ -16,6 +16,7 @@ type ApplyVoteRepository interface {
 }
 
 var ErrFoundMoreThanOne error = errors.New("found more than one row")
+var ErrNotFound error = errors.New("not found")
 
 func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 	return &applyVoteRepository{
@@ -25,12 +26,15 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 
 func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
 	var applyVoteList []model.ApplyVote
-	err = a.mysql.Select(applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=:citizenID", citizenID)
+	err = a.mysql.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", citizenID)
 	if err != nil {
 		return applyVote, err
 	}
 
-	if len(applyVoteList) != 1 {
+	applyVoteLength := len(applyVoteList)
+	if applyVoteLength == 0 {
+		return applyVote, ErrNotFound
+	} else if applyVoteLength > 1 {
 		return applyVote, ErrFoundMoreThanOne
 	}
 	return applyVoteList[0], nil
