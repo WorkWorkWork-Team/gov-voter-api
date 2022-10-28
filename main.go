@@ -44,7 +44,7 @@ func main() {
 
 	// Init Gin.
 	server := gin.Default()
-	server.GET("/validity", handler.AuthorizeJWT(jwtService), validityHandler.Validity)
+	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)

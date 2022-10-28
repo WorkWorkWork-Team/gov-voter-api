@@ -3,13 +3,14 @@ package handler
 import (
 	"net/http"
 
+	"github.com/WorkWorkWork-Team/gov-voter-api/config"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/sirupsen/logrus"
 )
 
-func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
+func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		const BEARER_SCHEMA = "Bearer "
 		authHeader := c.GetHeader("Authorization")
@@ -24,7 +25,7 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		tokenString := authHeader[len(BEARER_SCHEMA):]
 		token, err := jwtService.ValidateToken(tokenString)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Error(err, ", Token: ", tokenString)
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": err.Error(),
 			})
@@ -32,8 +33,8 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		}
 
 		if !token.Valid {
-			errMessage := "Cannot validate token "
-			logrus.Warn("Cannot validate token ", errMessage)
+			errMessage := "Cannot validate token"
+			logrus.Warn(errMessage, ", Token: ", tokenString)
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": errMessage,
 			})
@@ -41,6 +42,13 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
+		if claims["iss"] != appConfig.JWT_ISSUER {
+			errMessage := "Token signed from unknown issuer"
+			logrus.Warn(errMessage, ", Token: ", tokenString)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": errMessage,
+			})
+		}
 		logrus.Info(claims)
 	}
 }
