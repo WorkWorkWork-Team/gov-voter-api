@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
@@ -30,6 +31,10 @@ func (v *voteHandler) Validity(g *gin.Context) {
 
 func (v *voteHandler) ApplyVote(g *gin.Context) {
 	err := v.voteService.ApplyVote(g.Param("CitizenID"))
+	if errors.Is(err, service.ErrUserAlreadyApplied) {
+		g.Status(http.StatusBadRequest)
+		return
+	}
 	if err != nil {
 		g.Status(http.StatusInternalServerError)
 		return

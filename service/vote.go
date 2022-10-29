@@ -16,6 +16,8 @@ type VoteService interface {
 	CheckValidity(citizenID string) bool
 }
 
+var ErrUserAlreadyApplied error = errors.New("user already applied vote")
+
 func NewVoteService(applyVoteRepository repository.ApplyVoteRepository) VoteService {
 	return &voteService{
 		applyVoteRepository: applyVoteRepository,
@@ -23,7 +25,13 @@ func NewVoteService(applyVoteRepository repository.ApplyVoteRepository) VoteServ
 }
 
 func (v *voteService) ApplyVote(citizenID string) error {
-	return v.applyVoteRepository.ApplyVote(citizenID)
+	logrus.Info("Start apply vote")
+	defer logrus.Info("End apply vote")
+
+	if !v.CheckValidity(citizenID) {
+		return ErrUserAlreadyApplied
+	}
+	return nil
 }
 
 func (v *voteService) CheckValidity(citizenID string) bool {

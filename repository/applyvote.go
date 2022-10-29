@@ -27,10 +27,7 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 
 func (a *applyVoteRepository) ApplyVote(citizenID string) error {
 	_, err := a.mysql.Query("INSERT INTO ApplyVote (CitizenID) VALUES (?)", citizenID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
