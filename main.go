@@ -40,7 +40,7 @@ func main() {
 	getUserInformationHandler := handler.NewGetUserInformationHandler(getUserInfomationService)
 
 	server := httpserver.NewHttpServer()
-	server.GET("/getuserinfo", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
