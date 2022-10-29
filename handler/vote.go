@@ -8,21 +8,19 @@ import (
 )
 
 type voteHandler struct {
-	jwtService       service.JWTService
-	validityService  service.ValidityService
-	applyvoteService service.ApplyvoteService
+	jwtService  service.JWTService
+	voteService service.VoteService
 }
 
-func NewVoteHandler(jwtService service.JWTService, validityService service.ValidityService, applyvoteService service.ApplyvoteService) voteHandler {
+func NewVoteHandler(jwtService service.JWTService, voteService service.VoteService) voteHandler {
 	return voteHandler{
-		jwtService:       jwtService,
-		validityService:  validityService,
-		applyvoteService: applyvoteService,
+		jwtService:  jwtService,
+		voteService: voteService,
 	}
 }
 
 func (v *voteHandler) Validity(g *gin.Context) {
-	result := v.validityService.CheckValidity(g.Param("CitizenID"))
+	result := v.voteService.CheckValidity(g.Param("CitizenID"))
 	if result {
 		g.Status(http.StatusOK)
 		return
@@ -31,7 +29,7 @@ func (v *voteHandler) Validity(g *gin.Context) {
 }
 
 func (v *voteHandler) ApplyVote(g *gin.Context) {
-	err := v.applyvoteService.ApplyVote(g.Param("CitizenID"))
+	err := v.voteService.ApplyVote(g.Param("CitizenID"))
 	if err != nil {
 		g.Status(http.StatusInternalServerError)
 		return

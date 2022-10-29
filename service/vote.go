@@ -7,21 +7,26 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type validityService struct {
+type voteService struct {
 	applyVoteRepository repository.ApplyVoteRepository
 }
 
-type ValidityService interface {
+type VoteService interface {
+	ApplyVote(citizenID string) error
 	CheckValidity(citizenID string) bool
 }
 
-func NewValidityService(applyVoteRepository repository.ApplyVoteRepository) ValidityService {
-	return &validityService{
+func NewVoteService(applyVoteRepository repository.ApplyVoteRepository) VoteService {
+	return &voteService{
 		applyVoteRepository: applyVoteRepository,
 	}
 }
 
-func (v *validityService) CheckValidity(citizenID string) bool {
+func (v *voteService) ApplyVote(citizenID string) error {
+	return v.applyVoteRepository.ApplyVoteToDB(citizenID)
+}
+
+func (v *voteService) CheckValidity(citizenID string) bool {
 	logrus.Info("Start CheckValidity")
 	defer logrus.Info("End CheckValidity")
 

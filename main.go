@@ -37,11 +37,10 @@ func main() {
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 
 	// New Services
-	validityService := service.NewValidityService(applyVoteRepository)
-	applyvoteService := service.NewApplyvoteService(applyVoteRepository)
+	voteService := service.NewVoteService(applyVoteRepository)
 
 	// New Handler
-	voteHandler := handler.NewVoteHandler(jwtService, validityService, applyvoteService)
+	voteHandler := handler.NewVoteHandler(jwtService, voteService)
 
 	// Init Gin.
 	server := httpserver.NewHttpServer()
