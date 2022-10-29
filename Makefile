@@ -19,7 +19,7 @@ start-dev-db-window:
         mysql:latest
 
 start-dev-php-admin:
-	docker run --name phpmyadmin -d --link mysql-dev:db -p 8080:80 phpmyadmin/phpmyadmin
+	docker start phpmyadmin || docker run --name phpmyadmin -d --link mysql-dev:db -p 8080:80 phpmyadmin/phpmyadmin
 
 unit-test:
 	ginkgo -r
