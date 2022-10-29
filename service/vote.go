@@ -23,7 +23,7 @@ func NewVoteService(applyVoteRepository repository.ApplyVoteRepository) VoteServ
 }
 
 func (v *voteService) ApplyVote(citizenID string) error {
-	return v.applyVoteRepository.ApplyVoteToDB(citizenID)
+	return v.applyVoteRepository.ApplyVote(citizenID)
 }
 
 func (v *voteService) CheckValidity(citizenID string) bool {
