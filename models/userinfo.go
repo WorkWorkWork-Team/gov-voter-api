@@ -7,7 +7,7 @@ type UserInfo struct {
 	LazerId     string    `db:"LazerID"`
 	Name        string    `db:"Name"`
 	Lastname    string    `db:"Lastname"`
-	Birthday    time.Time `db:"BirthDay"`
+	Birthday    time.Time `db:"Birthday"`
 	Nationality string    `db:"Nationality"`
-	DistricID   string    `db:"DistricID"`
+	DistricID   string    `db:"DistrictID"`
 }
