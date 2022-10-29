@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"fmt"
+	"strconv"
+
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,7 +24,9 @@ func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository
 
 func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo model.Population, err error) {
 	var getUserInfoList []model.Population
-	err = g.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
+	fmt.Println(citizenID)
+	var id, _ = strconv.Atoi(citizenID)
+	err = g.mysql.Select(&getUserInfoList, "SELECT * FROM `Population` WHERE citizenID=?", id)
 	if err != nil {
 		return userInfo, err
 	}
@@ -32,5 +37,5 @@ func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo m
 	} else if userInfoLenght > 1 {
 		return userInfo, ErrFoundMoreThanOne
 	}
-	return userInfo, nil
+	return getUserInfoList[0], nil
 }
