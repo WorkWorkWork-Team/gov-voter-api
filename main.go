@@ -20,8 +20,6 @@ func init() {
 }
 
 func main() {
-	// New .
-	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	mysql, err := databasemysql.NewDbConnection(databasemysql.Config{
 		Hostname:     fmt.Sprint(appConfig.MYSQL_HOSTNAME, ":", appConfig.MYSQL_PORT),
 		Username:     appConfig.MYSQL_USERNAME,
@@ -37,14 +35,18 @@ func main() {
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 
 	// New Services
+	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	validityService := service.NewValidityService(applyVoteRepository)
+	authenticationService := service.NewAuthenticationService(jwtService)
 
 	// New Handler
 	validityHandler := handler.NewValidityHandler(jwtService, validityService)
+	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
 
 	// Init Gin.
 	server := httpserver.NewHttpServer()
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
+	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
