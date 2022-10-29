@@ -25,8 +25,5 @@ func (g *userService) CheckGetUserInformation(citizenID string) (model.Populatio
 	defer logrus.Info("Complete Checking Infomation")
 
 	info, err := g.populationRepository.GetUserInfo(citizenID)
-	if err != nil {
-		return info, err
-	}
 	return info, err
 }
