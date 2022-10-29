@@ -28,10 +28,13 @@ func (v *voteService) ApplyVote(citizenID string) error {
 	logrus.Info("Start apply vote")
 	defer logrus.Info("End apply vote")
 
-	if !v.CheckValidity(citizenID) {
+	isUserCanVoted := v.CheckValidity(citizenID)
+	logrus.Info("Is user can vote: ", isUserCanVoted)
+	if !isUserCanVoted {
 		return ErrUserAlreadyApplied
 	}
-	return nil
+	err := v.applyVoteRepository.ApplyVote(citizenID)
+	return err
 }
 
 func (v *voteService) CheckValidity(citizenID string) bool {
