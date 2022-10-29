@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/WorkWorkWork-Team/common-go/databasemysql"
+	"github.com/WorkWorkWork-Team/common-go/httpserver"
 	"github.com/WorkWorkWork-Team/gov-voter-api/config"
 	"github.com/WorkWorkWork-Team/gov-voter-api/handler"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
@@ -45,7 +46,7 @@ func main() {
 	applyvoteHandler := handler.NewApplyVoteHandler(applyvoteService)
 
 	// Init Gin.
-	server := gin.Default()
+	server := httpserver.NewHttpServer()
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
 	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), applyvoteHandler.ApplyVote)
 
