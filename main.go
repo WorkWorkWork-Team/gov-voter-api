@@ -39,7 +39,7 @@ func main() {
 
 	// New Services
 	voteService := service.NewVoteService(applyVoteRepository)
-	getUserInfomationService := service.NewGetUserInformtaionService(getUserInformationRepository)
+	getUserInfomationService := service.NewUserService(getUserInformationRepository)
 
 	// New Handler
 	voteHandler := handler.NewVoteHandler(jwtService, voteService)

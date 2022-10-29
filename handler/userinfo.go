@@ -8,18 +8,18 @@ import (
 )
 
 type userHandler struct {
-	service service.GetUserInformationService
+	service service.UserService
 }
 
-func NewUserHandler(getInformation service.GetUserInformationService) userHandler {
+func NewUserHandler(getInformation service.UserService) userHandler {
 	return userHandler{
 		service: getInformation,
 	}
 }
 
 func (g *userHandler) GetuserInfo(gi *gin.Context) {
-	userInfo, status := g.service.CheckGetUserInformation(gi.Param("CitizenID"))
-	if status {
+	userInfo, err := g.service.CheckGetUserInformation(gi.Param("CitizenID"))
+	if err == nil {
 		gi.JSON(http.StatusOK, gin.H{
 			"info": userInfo,
 		})

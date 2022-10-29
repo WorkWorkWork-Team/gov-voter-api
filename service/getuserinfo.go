@@ -6,27 +6,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type getUserInformationService struct {
-	getUserInfoRepository repository.PopulationRepository
+type userService struct {
+	populationRepository repository.PopulationRepository
 }
 
-type GetUserInformationService interface {
-	CheckGetUserInformation(citizenID string) (model.Population, bool)
+type UserService interface {
+	CheckGetUserInformation(citizenID string) (model.Population, error)
 }
 
-func NewGetUserInformtaionService(getUserInfoRepository repository.PopulationRepository) GetUserInformationService {
-	return &getUserInformationService{
-		getUserInfoRepository: getUserInfoRepository,
+func NewUserService(populationRepository repository.PopulationRepository) UserService {
+	return &userService{
+		populationRepository: populationRepository,
 	}
 }
 
-func (g *getUserInformationService) CheckGetUserInformation(citizenID string) (model.Population, bool) {
+func (g *userService) CheckGetUserInformation(citizenID string) (model.Population, error) {
 	logrus.Info("Start Check Infomation")
 	defer logrus.Info("Complete Checking Infomation")
 
-	info, err := g.getUserInfoRepository.GetUserInfo(citizenID)
+	info, err := g.populationRepository.GetUserInfo(citizenID)
 	if err != nil {
-		return info, false
+		return info, err
 	}
-	return info, true
+	return info, err
 }
