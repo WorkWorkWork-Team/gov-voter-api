@@ -31,22 +31,24 @@ func main() {
 		return
 	}
 
-	// New Repository
+	getUserInformationRepository := repository.NewGetUserInformtaionRepostory(mysql)
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 
 	// New Services
 	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	validityService := service.NewValidityService(applyVoteRepository)
 	authenticationService := service.NewAuthenticationService(jwtService)
+	getUserInfomationService := service.NewGetUserInformtaionService(getUserInformationRepository)
 
 	// New Handler
 	validityHandler := handler.NewValidityHandler(jwtService, validityService)
 	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
+	getUserInformationHandler := handler.NewGetUserInformationHandler(getUserInfomationService)
 
-	// Init Gin.
 	server := httpserver.NewHttpServer()
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
 	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
