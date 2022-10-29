@@ -6,24 +6,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type getUserInformationRepository struct {
+type populationRepository struct {
 	mysql *sqlx.DB
 }
 
 type PopulationRepository interface {
 	GetUserInfo(citizenID string) (model.UserInfo, error)
-	GetUserInfoBasedOnCitizenIDAndLazerID(citizenID int, lazerID string) (model.UserInfo, error)
+	GetUserInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (model.UserInfo, error)
 }
 
 func NewPopulationRepostory(mysql *sqlx.DB) PopulationRepository {
-	return &getUserInformationRepository{
+	return &populationRepository{
 		mysql: mysql,
 	}
 }
 
-func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userinfo model.UserInfo, err error) {
+func (p *populationRepository) GetUserInfo(citizenID string) (userinfo model.UserInfo, err error) {
 	var getUserInfoList []model.UserInfo
-	err = g.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
+	err = p.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
 		return userinfo, err
 	}
@@ -36,14 +36,13 @@ func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userinfo m
 	}
 	return userinfo, nil
 }
-func (g *getUserInformationRepository) GetUserInfoBasedOnCitizenIDAndLazerID(citizenID int, lazerID string) (userInfo model.UserInfo, err error) {
+func (p *populationRepository) GetUserInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (userInfo model.UserInfo, err error) {
 	var userInfoList []*model.UserInfo
-	err = g.mysql.Select(&userInfoList, "SELECT * from `Population` WHERE citizenID=? AND LazerID=?", citizenID, lazerID)
+	err = p.mysql.Select(&userInfoList, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
 	if err != nil {
 		logrus.Error("GetUserInfoBasedOnCitizenIDAndLazerID err:", err)
 		return userInfo, err
 	}
-	logrus.Info(*userInfoList[0])
 	userInfoLenght := len(userInfoList)
 	if userInfoLenght == 0 {
 		return userInfo, ErrNotFound

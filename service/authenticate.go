@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
+	"github.com/sirupsen/logrus"
 )
 
 type authenticationService struct {
@@ -13,8 +14,10 @@ type authenticationService struct {
 }
 
 type AuthenticationService interface {
-	Authenticate(citizenID int, lazerID string) (string, error)
+	Authenticate(citizenID string, lazerID string) (string, error)
 }
+
+var ErrUserNotFound = errors.New("user is not found or malformed")
 
 func NewAuthenticationService(jwtServices JWTService, populationRepository repository.PopulationRepository) AuthenticationService {
 	return &authenticationService{
@@ -23,10 +26,11 @@ func NewAuthenticationService(jwtServices JWTService, populationRepository repos
 	}
 }
 
-func (a *authenticationService) Authenticate(citizenID int, lazerID string) (string, error) {
+func (a *authenticationService) Authenticate(citizenID string, lazerID string) (string, error) {
 	userInfo, err := a.populationRepository.GetUserInfoBasedOnCitizenIDAndLazerID(citizenID, lazerID)
 	if err != nil {
-		return "", errors.New("user is not found or malformed")
+		logrus.Error(ErrUserNotFound)
+		return "", ErrUserNotFound
 	}
 
 	token, err := a.jwtServices.GenerateToken(fmt.Sprint(userInfo.CitizenID))
