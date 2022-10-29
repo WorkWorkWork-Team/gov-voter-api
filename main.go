@@ -31,14 +31,14 @@ func main() {
 		return
 	}
 
-	getUserInformationRepository := repository.NewGetUserInformtaionRepostory(mysql)
+	populationRepository := repository.NewPopulationRepostory(mysql)
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 
 	// New Services
 	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	validityService := service.NewValidityService(applyVoteRepository)
-	authenticationService := service.NewAuthenticationService(jwtService)
-	getUserInfomationService := service.NewGetUserInformtaionService(getUserInformationRepository)
+	authenticationService := service.NewAuthenticationService(jwtService, populationRepository)
+	getUserInfomationService := service.NewGetUserInformtaionService(populationRepository)
 
 	// New Handler
 	validityHandler := handler.NewValidityHandler(jwtService, validityService)

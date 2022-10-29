@@ -5,6 +5,7 @@ import (
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type authenticateHandler struct {
@@ -18,6 +19,8 @@ func NewAuthenticateHandler(service service.AuthenticationService) authenticateH
 }
 
 func (a *authenticateHandler) AuthAndGenerateToken(g *gin.Context) {
-	a.service.Authenticate("", "")
+	token, err := a.service.Authenticate(1234567891234, "1234AB")
+	logrus.Error(err)
+	logrus.Info(token)
 	g.Status(http.StatusOK)
 }
