@@ -9,5 +9,5 @@ type UserInfo struct {
 	Lastname    string    `db:"Lastname"`
 	Birthday    time.Time `db:"BirthDay"`
 	Nationality string    `db:"Nationality"`
-	DistricID   string    `db:"DistricID"`
+	DistricID   string    `db:"DistrictID"`
 }

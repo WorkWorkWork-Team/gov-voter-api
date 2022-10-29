@@ -11,7 +11,7 @@ type getUserInformationService struct {
 }
 
 type GetUserInformationService interface {
-	CheckGetUserInformation(citizenID string) (model.UserInfo, bool)
+	CheckGetUserInformation(citizenID string) (model.Population, bool)
 }
 
 func NewGetUserInformtaionService(getUserInfoRepository repository.GetUserInformationRepository) GetUserInformationService {
@@ -20,7 +20,7 @@ func NewGetUserInformtaionService(getUserInfoRepository repository.GetUserInform
 	}
 }
 
-func (g *getUserInformationService) CheckGetUserInformation(citizenID string) (model.UserInfo, bool) {
+func (g *getUserInformationService) CheckGetUserInformation(citizenID string) (model.Population, bool) {
 	logrus.Info("Start Check Infomation")
 	defer logrus.Info("Complete Checking Infomation")
 

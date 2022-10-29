@@ -10,7 +10,7 @@ type getUserInformationRepository struct {
 }
 
 type GetUserInformationRepository interface {
-	GetUserInfo(citizenID string) (model.UserInfo, error)
+	GetUserInfo(citizenID string) (model.Population, error)
 }
 
 func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository {
@@ -19,8 +19,8 @@ func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository
 	}
 }
 
-func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo model.UserInfo, err error) {
-	var getUserInfoList []model.UserInfo
+func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo model.Population, err error) {
+	var getUserInfoList []model.Population
 	err = g.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
 		return userInfo, err
