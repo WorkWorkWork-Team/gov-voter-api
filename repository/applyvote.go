@@ -12,6 +12,7 @@ type applyVoteRepository struct {
 }
 
 type ApplyVoteRepository interface {
+	ApplyVote(citizenID string) error
 	GetApplyVoteByCitizenID(citizenID string) (model.ApplyVote, error)
 }
 
@@ -22,6 +23,11 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 	return &applyVoteRepository{
 		mysql: mysql,
 	}
+}
+
+func (a *applyVoteRepository) ApplyVote(citizenID string) error {
+	_, err := a.mysql.Query("INSERT INTO ApplyVote (CitizenID) VALUES (?)", citizenID)
+	return err
 }
 
 func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
