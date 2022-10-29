@@ -12,7 +12,7 @@ type getUserInformationRepository struct {
 }
 
 type GetUserInformationRepository interface {
-	GetUserInfo(citizenID string)
+	GetUserInfo(citizenID string) (model.UserInfo, error)
 }
 
 func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository {
