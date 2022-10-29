@@ -1,5 +1,5 @@
-github.com/WorkWorkWork-Team/common-go v0.3.1 h1:fQ6WDcmCU73X84b6Nv4HTEeUqMPSPWSIWbhY/0RRAeg=
-github.com/WorkWorkWork-Team/common-go v0.3.1/go.mod h1:h6+IS4+IgKyRT6U8/8nouHfKHafJoMb+Zygw944+IBw=
+github.com/WorkWorkWork-Team/common-go v0.3.2 h1:pie9ab+CmVaLt2nVlcP+TQopQ0QTBuVcK62u0orzTFA=
+github.com/WorkWorkWork-Team/common-go v0.3.2/go.mod h1:h6+IS4+IgKyRT6U8/8nouHfKHafJoMb+Zygw944+IBw=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
