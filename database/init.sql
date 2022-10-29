@@ -1,23 +1,23 @@
-CREATE DATABASE devDB;
+CREATE DATABASE IF NOT EXISTS devDB;
 USE devDB
 
-CREATE TABLE Province
+CREATE TABLE IF NOT EXISTS Province
 (
-    ProvinceID INTEGER,
+    ProvinceID INTEGER NOT NULL AUTO_INCREMENT,
     Name VARCHAR(255),
     PRIMARY KEY (ProvinceID)
 );
 
-CREATE TABLE District
+CREATE TABLE IF NOT EXISTS District
 (
-    DistrictID INTEGER,
+    DistrictID INTEGER NOT NULL AUTO_INCREMENT,
     Name VARCHAR(255),
     ProvinceID INTEGER,
     CONSTRAINT fk_province FOREIGN KEY (ProvinceID) REFERENCES Province(ProvinceID),
     PRIMARY KEY (DistrictID)
 );
 
-CREATE TABLE Population
+CREATE TABLE IF NOT EXISTS Population
 (
     CitizenID BIGINT,
     LazerID VARCHAR(255),
@@ -30,10 +30,26 @@ CREATE TABLE Population
     PRIMARY KEY (CitizenID)
 );
 
-CREATE TABLE ApplyVote
+CREATE TABLE IF NOT EXISTS ApplyVote
 (
-    ID INTEGER,
+    ID INTEGER NOT NULL AUTO_INCREMENT,
     CitizenID BIGINT,
-    CONSTRAINT fk_citizen FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
+    CONSTRAINT fk_citizen_apply_vote FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE IF NOT EXISTS Candidate
+(
+    ID INTEGER NOT NULL AUTO_INCREMENT,
+    CitizenID BIGINT,
+    CONSTRAINT fk_citizen_candidate FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE IF NOT EXISTS Mp
+(
+    ID INTEGER NOT NULL AUTO_INCREMENT,
+    CitizenID BIGINT,
+    CONSTRAINT fk_citizen_mp FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (ID)
 );
