@@ -33,14 +33,22 @@ func main() {
 		return
 	}
 
+	// New Repository
+	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 	getUserInformationRepository := repository.NewGetUserInformtaionRepostory(mysql)
 
+	// New Services
+	voteService := service.NewVoteService(applyVoteRepository)
 	getUserInfomationService := service.NewGetUserInformtaionService(getUserInformationRepository)
 
+	// New Handler
+	voteHandler := handler.NewVoteHandler(jwtService, voteService)
 	getUserInformationHandler := handler.NewGetUserInformationHandler(getUserInfomationService)
 
 	server := httpserver.NewHttpServer()
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
+	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
+	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
