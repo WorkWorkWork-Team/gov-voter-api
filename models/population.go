@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type UserInfo struct {
+type Population struct {
 	CitizenID   int       `db:"CitizenID"`
 	LazerId     string    `db:"LazerID"`
 	Name        string    `db:"Name"`
