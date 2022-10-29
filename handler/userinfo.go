@@ -7,17 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type getinformationHandler struct {
+type userHandler struct {
 	service service.GetUserInformationService
 }
 
-func NewGetUserInformationHandler(getInformation service.GetUserInformationService) getinformationHandler {
-	return getinformationHandler{
+func NewUserHandler(getInformation service.GetUserInformationService) userHandler {
+	return userHandler{
 		service: getInformation,
 	}
 }
 
-func (g *getinformationHandler) GetuserInfo(gi *gin.Context) {
+func (g *userHandler) GetuserInfo(gi *gin.Context) {
 	userInfo, status := g.service.CheckGetUserInformation(gi.Param("CitizenID"))
 	if status {
 		gi.JSON(http.StatusOK, gin.H{

@@ -43,7 +43,7 @@ func main() {
 
 	// New Handler
 	voteHandler := handler.NewVoteHandler(jwtService, voteService)
-	getUserInformationHandler := handler.NewGetUserInformationHandler(getUserInfomationService)
+	getUserInformationHandler := handler.NewUserHandler(getUserInfomationService)
 
 	server := httpserver.NewHttpServer()
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
