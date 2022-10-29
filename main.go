@@ -45,6 +45,7 @@ func main() {
 	voteHandler := handler.NewVoteHandler(jwtService, voteService)
 	getUserInformationHandler := handler.NewUserHandler(getUserInfomationService)
 
+	// Init Gin.
 	server := httpserver.NewHttpServer()
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
