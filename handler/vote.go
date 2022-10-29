@@ -32,12 +32,18 @@ func (v *voteHandler) Validity(g *gin.Context) {
 func (v *voteHandler) ApplyVote(g *gin.Context) {
 	err := v.voteService.ApplyVote(g.Param("CitizenID"))
 	if errors.Is(err, service.ErrUserAlreadyApplied) {
-		g.Status(http.StatusBadRequest)
+		g.JSON(http.StatusBadRequest, gin.H{
+			"message": "Already applied",
+		})
 		return
 	} else if err != nil {
-		g.Status(http.StatusInternalServerError)
+		g.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Something went wrong",
+		})
 		return
 	}
-	g.Status(http.StatusOK)
+	g.JSON(http.StatusOK, gin.H{
+		"message": "summited",
+	})
 	return
 }
