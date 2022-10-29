@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS District
 
 CREATE TABLE IF NOT EXISTS Population
 (
-    CitizenID BIGINT,
+    CitizenID VARCHAR(255),
     LazerID VARCHAR(255),
     Name VARCHAR(255),
     Lastname VARCHAR(255),
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS Population
 CREATE TABLE IF NOT EXISTS ApplyVote
 (
     ID INTEGER NOT NULL AUTO_INCREMENT,
-    CitizenID BIGINT,
+    CitizenID VARCHAR(255),
     CONSTRAINT fk_citizen_apply_vote FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (ID)
 );
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS ApplyVote
 CREATE TABLE IF NOT EXISTS Candidate
 (
     ID INTEGER NOT NULL AUTO_INCREMENT,
-    CitizenID BIGINT,
+    CitizenID VARCHAR(255),
     CONSTRAINT fk_citizen_candidate FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (ID)
 );
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS Candidate
 CREATE TABLE IF NOT EXISTS Mp
 (
     ID INTEGER NOT NULL AUTO_INCREMENT,
-    CitizenID BIGINT,
+    CitizenID VARCHAR(255),
     CONSTRAINT fk_citizen_mp FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (ID)
 );

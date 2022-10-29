@@ -37,14 +37,15 @@ func main() {
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 
 	// New Services
-	validityService := service.NewValidityService(applyVoteRepository)
+	voteService := service.NewVoteService(applyVoteRepository)
 
 	// New Handler
-	validityHandler := handler.NewValidityHandler(jwtService, validityService)
+	voteHandler := handler.NewVoteHandler(jwtService, voteService)
 
 	// Init Gin.
 	server := httpserver.NewHttpServer()
-	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), validityHandler.Validity)
+	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
+	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
