@@ -34,8 +34,7 @@ func (v *voteHandler) ApplyVote(g *gin.Context) {
 	if errors.Is(err, service.ErrUserAlreadyApplied) {
 		g.Status(http.StatusBadRequest)
 		return
-	}
-	if err != nil {
+	} else if err != nil {
 		g.Status(http.StatusInternalServerError)
 		return
 	}
