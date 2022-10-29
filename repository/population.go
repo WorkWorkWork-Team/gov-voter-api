@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"errors"
-
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,18 +19,18 @@ func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository
 	}
 }
 
-func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userinfo model.UserInfo, err error) {
+func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo model.UserInfo, err error) {
 	var getUserInfoList []model.UserInfo
 	err = g.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
-		return userinfo, err
+		return userInfo, err
 	}
 
 	userInfoLenght := len(getUserInfoList)
 	if userInfoLenght == 0 {
-		return userinfo, errors.New("Not match CitizenID")
+		return userInfo, ErrNotFound
 	} else if userInfoLenght > 1 {
-		return userinfo, errors.New("Found more than ")
+		return userInfo, ErrFoundMoreThanOne
 	}
-	return userinfo, nil
+	return userInfo, nil
 }

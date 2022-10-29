@@ -1,13 +1,17 @@
 package service
 
-import "github.com/WorkWorkWork-Team/gov-voter-api/repository"
+import (
+	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
+	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
+	"github.com/sirupsen/logrus"
+)
 
 type getUserInformationService struct {
 	getUserInfoRepository repository.GetUserInformationRepository
 }
 
 type GetUserInformationService interface {
-	GetUserInformation() bool
+	CheckGetUserInformation(citizenID string) (model.UserInfo, bool)
 }
 
 func NewGetUserInformtaionService(getUserInfoRepository repository.GetUserInformationRepository) GetUserInformationService {
@@ -16,6 +20,13 @@ func NewGetUserInformtaionService(getUserInfoRepository repository.GetUserInform
 	}
 }
 
-func (g *getUserInformationService) GetUserInformation() bool {
-	return false
+func (g *getUserInformationService) CheckGetUserInformation(citizenID string) (model.UserInfo, bool) {
+	logrus.Info("Start Check Infomation")
+	defer logrus.Info("Complete Checking Infomation")
+
+	info, err := g.getUserInfoRepository.GetUserInfo(citizenID)
+	if err != nil {
+		return info, false
+	}
+	return info, true
 }
