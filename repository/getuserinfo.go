@@ -8,21 +8,21 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type getUserInformationRepository struct {
+type populationRepository struct {
 	mysql *sqlx.DB
 }
 
-type GetUserInformationRepository interface {
+type PopulationRepository interface {
 	GetUserInfo(citizenID string) (model.Population, error)
 }
 
-func NewGetUserInformtaionRepostory(mysql *sqlx.DB) GetUserInformationRepository {
-	return &getUserInformationRepository{
+func NewPopulationRepository(mysql *sqlx.DB) PopulationRepository {
+	return &populationRepository{
 		mysql: mysql,
 	}
 }
 
-func (g *getUserInformationRepository) GetUserInfo(citizenID string) (userInfo model.Population, err error) {
+func (g *populationRepository) GetUserInfo(citizenID string) (userInfo model.Population, err error) {
 	var getUserInfoList []model.Population
 	fmt.Println(citizenID)
 	var id, _ = strconv.Atoi(citizenID)

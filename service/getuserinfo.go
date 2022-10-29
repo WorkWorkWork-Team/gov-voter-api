@@ -7,14 +7,14 @@ import (
 )
 
 type getUserInformationService struct {
-	getUserInfoRepository repository.GetUserInformationRepository
+	getUserInfoRepository repository.PopulationRepository
 }
 
 type GetUserInformationService interface {
 	CheckGetUserInformation(citizenID string) (model.Population, bool)
 }
 
-func NewGetUserInformtaionService(getUserInfoRepository repository.GetUserInformationRepository) GetUserInformationService {
+func NewGetUserInformtaionService(getUserInfoRepository repository.PopulationRepository) GetUserInformationService {
 	return &getUserInformationService{
 		getUserInfoRepository: getUserInfoRepository,
 	}

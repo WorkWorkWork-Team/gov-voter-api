@@ -35,7 +35,7 @@ func main() {
 
 	// New Repository
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
-	getUserInformationRepository := repository.NewGetUserInformtaionRepostory(mysql)
+	getUserInformationRepository := repository.NewPopulationRepository(mysql)
 
 	// New Services
 	voteService := service.NewVoteService(applyVoteRepository)
