@@ -37,17 +37,11 @@ func (p *populationRepository) GetUserInfo(citizenID string) (userinfo model.Use
 	return userinfo, nil
 }
 func (p *populationRepository) GetUserInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (userInfo model.UserInfo, err error) {
-	var userInfoList []*model.UserInfo
-	err = p.mysql.Select(&userInfoList, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
+	var userInfoList model.UserInfo
+	err = p.mysql.Get(&userInfoList, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
 	if err != nil {
 		logrus.Error("GetUserInfoBasedOnCitizenIDAndLazerID err:", err)
 		return userInfo, err
 	}
-	userInfoLenght := len(userInfoList)
-	if userInfoLenght == 0 {
-		return userInfo, ErrNotFound
-	} else if userInfoLenght > 1 {
-		return userInfo, ErrFoundMoreThanOne
-	}
-	return *userInfoList[0], nil
+	return userInfoList, nil
 }
