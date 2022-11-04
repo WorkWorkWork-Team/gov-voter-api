@@ -11,7 +11,7 @@ type userService struct {
 }
 
 type UserService interface {
-	CheckGetUserInformation(citizenID string) (model.Population, error)
+	GetUserInformation(citizenID string) (model.Population, error)
 }
 
 func NewUserService(populationRepository repository.PopulationRepository) UserService {
@@ -20,7 +20,7 @@ func NewUserService(populationRepository repository.PopulationRepository) UserSe
 	}
 }
 
-func (g *userService) CheckGetUserInformation(citizenID string) (model.Population, error) {
+func (g *userService) GetUserInformation(citizenID string) (model.Population, error) {
 	logrus.Info("Start Check Infomation")
 	defer logrus.Info("Complete Checking Infomation")
 
