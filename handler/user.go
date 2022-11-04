@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
@@ -23,8 +25,14 @@ func (g *userHandler) GetuserInfo(gi *gin.Context) {
 		gi.JSON(http.StatusOK, gin.H{
 			"info": userInfo,
 		})
-	} else {
-		gi.Status(http.StatusBadRequest)
+		return
+	} else if errors.Is(err, sql.ErrNoRows) {
+		gi.JSON(http.StatusNotFound, gin.H{
+			"message": "Not matching data",
+		})
+		return
 	}
-
+	gi.JSON(http.StatusInternalServerError, gin.H{
+		"message": "Something went wrong.",
+	})
 }
