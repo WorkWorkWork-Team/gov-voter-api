@@ -35,15 +35,19 @@ func main() {
 
 	// New Repository
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
+	getUserInformationRepository := repository.NewPopulationRepository(mysql)
 
 	// New Services
 	voteService := service.NewVoteService(applyVoteRepository)
+	getUserInfomationService := service.NewUserService(getUserInformationRepository)
 
 	// New Handler
 	voteHandler := handler.NewVoteHandler(jwtService, voteService)
+	getUserInformationHandler := handler.NewUserHandler(getUserInfomationService)
 
 	// Init Gin.
 	server := httpserver.NewHttpServer()
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
 	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
 

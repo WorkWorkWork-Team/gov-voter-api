@@ -18,7 +18,7 @@ func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.Ha
 		if len(authHeader) < len(BEARER_SCHEMA) {
 			errMessage := "Header is not containing any Bearer key."
 			logrus.Warn(errMessage)
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": errMessage,
 			})
 			return
@@ -27,7 +27,7 @@ func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.Ha
 		token, err := jwtService.ValidateToken(tokenString)
 		if err != nil {
 			logrus.Error(err, ", Token: ", tokenString)
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": err.Error(),
 			})
 			return
@@ -36,7 +36,7 @@ func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.Ha
 		if !token.Valid {
 			errMessage := "Cannot validate token"
 			logrus.Warn(errMessage, ", Token: ", tokenString)
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": errMessage,
 			})
 			return
@@ -46,7 +46,7 @@ func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.Ha
 		if claims["iss"] != appConfig.JWT_ISSUER {
 			errMessage := "Token signed from unknown issuer"
 			logrus.Warn(errMessage, ", Token: ", tokenString)
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": errMessage,
 			})
 		}
