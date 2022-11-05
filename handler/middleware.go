@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/config"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
@@ -11,19 +12,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var authBearerRegExp *regexp.Regexp = regexp.MustCompile("[B|b]earer (.*)")
+
 func AuthorizeJWT(jwtService service.JWTService, appConfig config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		const BEARER_SCHEMA = "Bearer "
-		authHeader := c.GetHeader("Authorization")
-		if len(authHeader) < len(BEARER_SCHEMA) {
-			errMessage := "Header is not containing any Bearer key."
-			logrus.Warn(errMessage)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"message": errMessage,
-			})
+		tokenStringList := authBearerRegExp.FindStringSubmatch(c.GetHeader("Authorization"))
+		logrus.Debug("RegExp Debug: ", tokenStringList)
+		if len(tokenStringList) != 2 {
+			logrus.Warn("Authorization Header is malformed: ", c.GetHeader("Authorization"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Token is malformed and request is unauthorized"})
 			return
 		}
-		tokenString := authHeader[len(BEARER_SCHEMA):]
+
+		tokenString := tokenStringList[1]
 		token, err := jwtService.ValidateToken(tokenString)
 		if err != nil {
 			logrus.Error(err, ", Token: ", tokenString)
