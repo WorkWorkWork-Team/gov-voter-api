@@ -46,7 +46,7 @@ func main() {
 	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
 
 	server := httpserver.NewHttpServer()
-	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetPopulationInfo)
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
 	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
 	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)

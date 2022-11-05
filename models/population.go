@@ -9,5 +9,5 @@ type Population struct {
 	Lastname    string    `db:"Lastname"`
 	Birthday    time.Time `db:"Birthday"`
 	Nationality string    `db:"Nationality"`
-	DistricID   string    `db:"DistrictID"`
+	DistricID   int       `db:"DistrictID"`
 }

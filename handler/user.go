@@ -23,7 +23,7 @@ func NewUserHandler(populationService service.PopulationService, jwtService serv
 	}
 }
 
-func (u *userHandler) GetPopulationInfo(gi *gin.Context) {
+func (u *userHandler) GetUserInfo(gi *gin.Context) {
 	populationInfo, err := u.populationService.GetPopulationInformation(gi.Param("CitizenID"))
 	if err == nil {
 		gi.JSON(http.StatusOK, populationInfo)
