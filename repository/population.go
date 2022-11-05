@@ -11,30 +11,22 @@ type populationRepository struct {
 }
 
 type PopulationRepository interface {
-	GetUserInfo(citizenID string) (model.UserInfo, error)
-	GetUserInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (model.UserInfo, error)
+	GetUserInfo(citizenID string) (model.Population, error)
 }
 
-func NewPopulationRepostory(mysql *sqlx.DB) PopulationRepository {
+func NewPopulationRepository(mysql *sqlx.DB) PopulationRepository {
 	return &populationRepository{
 		mysql: mysql,
 	}
 }
 
-func (p *populationRepository) GetUserInfo(citizenID string) (userinfo model.UserInfo, err error) {
-	var getUserInfoList []model.UserInfo
-	err = p.mysql.Select(&getUserInfoList, "SELECT * from `Population` WHERE citizenID=?", citizenID)
+func (p *populationRepository) GetUserInfo(citizenID string) (userinfo model.Population, err error) {
+	var populationInfo model.Population
+	err = p.mysql.Get(&populationInfo, "SELECT * FROM `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
-		return userinfo, err
+		return populationInfo, err
 	}
-
-	userInfoLenght := len(getUserInfoList)
-	if userInfoLenght == 0 {
-		return userinfo, ErrNotFound
-	} else if userInfoLenght > 1 {
-		return userinfo, ErrFoundMoreThanOne
-	}
-	return userinfo, nil
+	return populationInfo, nil
 }
 func (p *populationRepository) GetUserInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (userInfo model.UserInfo, err error) {
 	var userInfoList model.UserInfo
