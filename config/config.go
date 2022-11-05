@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 
+	"github.com/WorkWorkWork-Team/common-go/logger"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
@@ -31,6 +32,10 @@ func Load() Config {
 		// Default value for ENV.
 		ENV = "dev"
 	}
+
+	logger.InitLogger(logger.Config{
+		Env: ENV,
+	})
 
 	err := godotenv.Load("./.env")
 	if err != nil {
