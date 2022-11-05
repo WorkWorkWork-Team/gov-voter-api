@@ -10,21 +10,23 @@ import (
 )
 
 type userHandler struct {
-	service service.UserService
+	populationService service.PopulationService
+	jwtService        service.JWTService
+	voteService       service.VoteService
 }
 
-func NewUserHandler(getInformation service.UserService) userHandler {
+func NewUserHandler(populationService service.PopulationService, jwtService service.JWTService, voteService service.VoteService) userHandler {
 	return userHandler{
-		service: getInformation,
+		populationService: populationService,
+		jwtService:        jwtService,
+		voteService:       voteService,
 	}
 }
 
-func (g *userHandler) GetuserInfo(gi *gin.Context) {
-	userInfo, err := g.service.GetUserInformation(gi.Param("CitizenID"))
+func (u *userHandler) GetUserInfo(gi *gin.Context) {
+	populationInfo, err := u.populationService.GetPopulationInformation(gi.Param("CitizenID"))
 	if err == nil {
-		gi.JSON(http.StatusOK, gin.H{
-			"info": userInfo,
-		})
+		gi.JSON(http.StatusOK, populationInfo)
 		return
 	} else if errors.Is(err, sql.ErrNoRows) {
 		gi.JSON(http.StatusNotFound, gin.H{
@@ -34,5 +36,32 @@ func (g *userHandler) GetuserInfo(gi *gin.Context) {
 	}
 	gi.JSON(http.StatusInternalServerError, gin.H{
 		"message": "Something went wrong.",
+	})
+}
+
+func (u *userHandler) Validity(g *gin.Context) {
+	result := u.voteService.CheckValidity(g.Param("CitizenID"))
+	if result {
+		g.Status(http.StatusOK)
+		return
+	}
+	g.Status(http.StatusBadRequest)
+}
+
+func (u *userHandler) ApplyVote(g *gin.Context) {
+	err := u.voteService.ApplyVote(g.Param("CitizenID"))
+	if errors.Is(err, service.ErrUserAlreadyApplied) {
+		g.JSON(http.StatusBadRequest, gin.H{
+			"message": "Already applied",
+		})
+		return
+	} else if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Something went wrong",
+		})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{
+		"message": "summited",
 	})
 }

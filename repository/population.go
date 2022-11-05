@@ -3,6 +3,7 @@ package repository
 import (
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type populationRepository struct {
@@ -10,7 +11,8 @@ type populationRepository struct {
 }
 
 type PopulationRepository interface {
-	GetUserInfo(citizenID string) (model.Population, error)
+	GetPopulationInfo(citizenID string) (model.Population, error)
+	GetPopulationInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (populationInfo model.Population, err error)
 }
 
 func NewPopulationRepository(mysql *sqlx.DB) PopulationRepository {
@@ -19,11 +21,18 @@ func NewPopulationRepository(mysql *sqlx.DB) PopulationRepository {
 	}
 }
 
-func (g *populationRepository) GetUserInfo(citizenID string) (userInfo model.Population, err error) {
-	var getUserInfoList model.Population
-	err = g.mysql.Get(&getUserInfoList, "SELECT * FROM `Population` WHERE citizenID=?", citizenID)
+func (p *populationRepository) GetPopulationInfo(citizenID string) (populationInfo model.Population, err error) {
+	err = p.mysql.Get(&populationInfo, "SELECT * FROM `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
-		return userInfo, err
+		return populationInfo, err
 	}
-	return getUserInfoList, nil
+	return populationInfo, nil
+}
+func (p *populationRepository) GetPopulationInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (populationInfo model.Population, err error) {
+	err = p.mysql.Get(&populationInfo, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
+	if err != nil {
+		logrus.Error("GetPopulationInfoBasedOnCitizenIDAndLazerID err:", err)
+		return populationInfo, err
+	}
+	return populationInfo, nil
 }

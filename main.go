@@ -20,8 +20,6 @@ func init() {
 }
 
 func main() {
-	// New .
-	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	mysql, err := databasemysql.NewDbConnection(databasemysql.Config{
 		Hostname:     fmt.Sprint(appConfig.MYSQL_HOSTNAME, ":", appConfig.MYSQL_PORT),
 		Username:     appConfig.MYSQL_USERNAME,
@@ -33,23 +31,25 @@ func main() {
 		return
 	}
 
-	// New Repository
+	populationRepository := repository.NewPopulationRepository(mysql)
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
-	getUserInformationRepository := repository.NewPopulationRepository(mysql)
 
 	// New Services
+
+	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	voteService := service.NewVoteService(applyVoteRepository)
-	getUserInfomationService := service.NewUserService(getUserInformationRepository)
+	authenticationService := service.NewAuthenticationService(jwtService, populationRepository)
+	populationService := service.NewPopulationService(populationRepository)
 
 	// New Handler
-	voteHandler := handler.NewVoteHandler(jwtService, voteService)
-	getUserInformationHandler := handler.NewUserHandler(getUserInfomationService)
+	userHandler := handler.NewUserHandler(populationService, jwtService, voteService)
+	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
 
-	// Init Gin.
 	server := httpserver.NewHttpServer()
-	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
-	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
-	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
+	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
+	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
+	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
