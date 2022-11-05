@@ -33,25 +33,23 @@ func main() {
 
 	populationRepository := repository.NewPopulationRepository(mysql)
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
-	getUserInformationRepository := repository.NewPopulationRepository(mysql)
 
 	// New Services
 
 	jwtService := service.NewJWTService(appConfig.JWT_SECRET_KEY, appConfig.JWT_ISSUER, time.Duration(appConfig.JWT_TTL)*time.Second)
 	voteService := service.NewVoteService(applyVoteRepository)
 	authenticationService := service.NewAuthenticationService(jwtService, populationRepository)
-	getUserInfomationService := service.NewUserService(getUserInformationRepository)
+	populationService := service.NewPopulationService(populationRepository)
 
 	// New Handler
-	voteHandler := handler.NewVoteHandler(jwtService, voteService)
+	userHandler := handler.NewUserHandler(populationService, jwtService, voteService)
 	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
-	getUserInformationHandler := handler.NewUserHandler(getUserInfomationService)
 
 	server := httpserver.NewHttpServer()
-	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
-	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
+	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetPopulationInfo)
+	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
+	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
 	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
-	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)

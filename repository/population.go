@@ -21,8 +21,7 @@ func NewPopulationRepository(mysql *sqlx.DB) PopulationRepository {
 	}
 }
 
-func (p *populationRepository) GetPopulationInfo(citizenID string) (userinfo model.Population, err error) {
-	var populationInfo model.Population
+func (p *populationRepository) GetPopulationInfo(citizenID string) (populationInfo model.Population, err error) {
 	err = p.mysql.Get(&populationInfo, "SELECT * FROM `Population` WHERE citizenID=?", citizenID)
 	if err != nil {
 		return populationInfo, err
@@ -30,11 +29,10 @@ func (p *populationRepository) GetPopulationInfo(citizenID string) (userinfo mod
 	return populationInfo, nil
 }
 func (p *populationRepository) GetPopulationInfoBasedOnCitizenIDAndLazerID(citizenID string, lazerID string) (populationInfo model.Population, err error) {
-	var userInfoList model.Population
-	err = p.mysql.Get(&userInfoList, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
+	err = p.mysql.Get(&populationInfo, "SELECT * from `Population` WHERE CitizenID=? AND LazerID=?", citizenID, lazerID)
 	if err != nil {
 		logrus.Error("GetPopulationInfoBasedOnCitizenIDAndLazerID err:", err)
 		return populationInfo, err
 	}
-	return userInfoList, nil
+	return populationInfo, nil
 }

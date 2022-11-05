@@ -6,21 +6,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type userService struct {
+type populationService struct {
 	populationRepository repository.PopulationRepository
 }
 
-type UserService interface {
-	GetUserInformation(citizenID string) (model.Population, error)
+type PopulationService interface {
+	GetPopulationInformation(citizenID string) (model.Population, error)
 }
 
-func NewUserService(populationRepository repository.PopulationRepository) UserService {
-	return &userService{
+func NewPopulationService(populationRepository repository.PopulationRepository) PopulationService {
+	return &populationService{
 		populationRepository: populationRepository,
 	}
 }
 
-func (g *userService) GetUserInformation(citizenID string) (model.Population, error) {
+func (g *populationService) GetPopulationInformation(citizenID string) (model.Population, error) {
 	logrus.Info("Start Check Infomation")
 	defer logrus.Info("Complete Checking Infomation")
 
