@@ -20,10 +20,10 @@ func NewUserHandler(getInformation service.UserService) userHandler {
 }
 
 func (g *userHandler) GetuserInfo(gi *gin.Context) {
-	userInfo, err := g.service.GetUserInformation(gi.Param("CitizenID"))
+	populationInfo, err := g.service.GetUserInformation(gi.Param("CitizenID"))
 	if err == nil {
 		gi.JSON(http.StatusOK, gin.H{
-			"info": userInfo,
+			"info": populationInfo,
 		})
 		return
 	} else if errors.Is(err, sql.ErrNoRows) {

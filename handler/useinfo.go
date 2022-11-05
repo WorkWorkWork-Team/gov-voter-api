@@ -18,8 +18,8 @@ func NewGetUserInformationHandler(getInformation service.GetUserInformationServi
 }
 
 func (g *getinformationHandler) GetuserInfo(gi *gin.Context) {
-	userInfo := g.service.GetUserInformation()
+	populationInfo := g.service.GetUserInformation()
 	gi.JSON(http.StatusOK, gin.H{
-		"test": userInfo,
+		"test": populationInfo,
 	})
 }

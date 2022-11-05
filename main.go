@@ -31,7 +31,7 @@ func main() {
 		return
 	}
 
-	populationRepository := repository.NewPopulationRepostory(mysql)
+	populationRepository := repository.NewPopulationRepository(mysql)
 	applyVoteRepository := repository.NewApplyVoteRepository(mysql)
 	getUserInformationRepository := repository.NewPopulationRepository(mysql)
 
@@ -51,7 +51,6 @@ func main() {
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.Validity)
 	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
-	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), getUserInformationHandler.GetuserInfo)
 	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), voteHandler.ApplyVote)
 
 	if appConfig.Env != "prod" {

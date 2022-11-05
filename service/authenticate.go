@@ -27,12 +27,12 @@ func NewAuthenticationService(jwtServices JWTService, populationRepository repos
 }
 
 func (a *authenticationService) Authenticate(citizenID string, lazerID string) (string, error) {
-	userInfo, err := a.populationRepository.GetUserInfoBasedOnCitizenIDAndLazerID(citizenID, lazerID)
+	populationInfo, err := a.populationRepository.GetPopulationInfoBasedOnCitizenIDAndLazerID(citizenID, lazerID)
 	if err != nil {
 		logrus.Error(ErrUserNotFound)
 		return "", ErrUserNotFound
 	}
 
-	token, err := a.jwtServices.GenerateToken(fmt.Sprint(userInfo.CitizenID))
+	token, err := a.jwtServices.GenerateToken(fmt.Sprint(populationInfo.CitizenID))
 	return token, err
 }
