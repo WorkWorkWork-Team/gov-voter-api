@@ -26,9 +26,7 @@ func NewUserHandler(populationService service.PopulationService, jwtService serv
 func (u *userHandler) GetPopulationInfo(gi *gin.Context) {
 	populationInfo, err := u.populationService.GetPopulationInformation(gi.Param("CitizenID"))
 	if err == nil {
-		gi.JSON(http.StatusOK, gin.H{
-			"info": populationInfo,
-		})
+		gi.JSON(http.StatusOK, populationInfo)
 		return
 	} else if errors.Is(err, sql.ErrNoRows) {
 		gi.JSON(http.StatusNotFound, gin.H{
