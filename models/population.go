@@ -4,7 +4,7 @@ import "time"
 
 type Population struct {
 	CitizenID   int       `db:"CitizenID"`
-	LazerId     string    `db:"LazerID"`
+	LazerID     string    `db:"LazerID"`
 	Name        string    `db:"Name"`
 	Lastname    string    `db:"Lastname"`
 	Birthday    time.Time `db:"Birthday"`
