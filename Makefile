@@ -23,3 +23,11 @@ start-dev-php-admin:
 
 unit-test:
 	ginkgo -r
+
+mockgen:
+	mockgen -destination=./test/mock_repository/mock_applyvote.go -source=./repository/applyvote.go -package=mock_repository
+	mockgen -destination=./test/mock_repository/mock_population.go -source=./repository/population.go -package=mock_repository
+	mockgen -destination=./test/mock_service/mock_authenticate.go -source=./service/authenticate.go -package=mock_service
+	mockgen -destination=./test/mock_service/mock_jwt.go -source=./service/jwt.go -package=mock_service
+	mockgen -destination=./test/mock_service/mock_population.go -source=./service/population.go -package=mock_service
+	mockgen -destination=./test/mock_service/mock_vote.go -source=./service/vote.go -package=mock_service
