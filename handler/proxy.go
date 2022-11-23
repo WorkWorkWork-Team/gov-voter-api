@@ -9,7 +9,11 @@ import (
 )
 
 func Proxy(c *gin.Context) {
-	remote, err := url.Parse(c.Request.Host)
+	scheme := "http"
+	if c.Request.TLS != nil {
+		scheme = "https"
+	}
+	remote, err := url.Parse(scheme + c.Request.Host + c.Request.URL.Path)
 	if err != nil {
 		panic(err)
 	}
