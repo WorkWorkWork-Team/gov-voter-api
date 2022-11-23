@@ -2,9 +2,10 @@ package repository
 
 import (
 	"errors"
-
+	"fmt"
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type applyVoteRepository struct {
@@ -12,8 +13,8 @@ type applyVoteRepository struct {
 }
 
 type ApplyVoteRepository interface {
-	ApplyVote(citizenID string) error
-	GetApplyVoteByCitizenID(citizenID string) (model.ApplyVote, error)
+	ApplyVote(citizenID string, tableName string) error
+	GetApplyVoteByCitizenID(citizenID string, table string) (model.ApplyVote, error)
 }
 
 var ErrFoundMoreThanOne error = errors.New("found more than one row")
@@ -25,15 +26,21 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 	}
 }
 
-func (a *applyVoteRepository) ApplyVote(citizenID string) error {
-	_, err := a.mysql.Query("INSERT INTO ApplyVote (CitizenID) VALUES (?)", citizenID)
+func (a *applyVoteRepository) ApplyVote(citizenID string, tableName string) error {
+	var query = fmt.Sprintf("INSERT INTO %s (CitizenID) VALUES (%s)", tableName, citizenID)
+	_, err := a.mysql.Query(query)
+	if err != nil {
+		logrus.Error(err)
+	}
 	return err
 }
 
-func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
+func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string, tableName string) (applyVote model.ApplyVote, err error) {
 	var applyVoteList []model.ApplyVote
-	err = a.mysql.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", citizenID)
+	var query = fmt.Sprintf("SELECT * FROM %s WHERE citizenID=%s", tableName, citizenID)
+	err = a.mysql.Select(&applyVoteList, query)
 	if err != nil {
+		logrus.Info(err)
 		return applyVote, err
 	}
 

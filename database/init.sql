@@ -30,13 +30,21 @@ CREATE TABLE IF NOT EXISTS Population
     PRIMARY KEY (CitizenID)
 );
 
-CREATE TABLE IF NOT EXISTS ApplyVote
+CREATE TABLE IF NOT EXISTS ApplyVoteMp
 (
     ID INTEGER NOT NULL AUTO_INCREMENT,
     CitizenID VARCHAR(255),
-    CONSTRAINT fk_citizen_apply_vote FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
+    CONSTRAINT fk_citizen_apply_vote_mp FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
     PRIMARY KEY (ID)
 );
+
+CREATE TABLE IF NOT EXISTS ApplyVoteParty
+(
+    ID INTEGER NOT NULL AUTO_INCREMENT,
+    CitizenID VARCHAR(255),
+    CONSTRAINT fk_citizen_apply_vote_party FOREIGN KEY (CitizenID) REFERENCES Population(CitizenID),
+    PRIMARY KEY (ID)
+    );
 
 CREATE TABLE IF NOT EXISTS Candidate
 (

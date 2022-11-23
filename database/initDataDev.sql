@@ -15,7 +15,11 @@ VALUES
     ("1234567891234", "1234AB", 'Somsri', 'MairuMairu', '2015-12-17', 'Thai', 1),
     ("1234567891235", "CCAADD", 'Smorn', 'YeomPoen', '2015-12-02', 'Thai', 2);
 
-INSERT INTO ApplyVote
+INSERT INTO ApplyVoteMp
+VALUES
+    (1, "1234567891234");
+
+INSERT INTO ApplyVoteParty
 VALUES
     (1, "1234567891234");
 

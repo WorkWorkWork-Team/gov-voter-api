@@ -47,8 +47,8 @@ func main() {
 
 	server := httpserver.NewHttpServer()
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
-	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
-	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
+	server.GET("/validity/:TableID/", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
+	server.POST("/applyvote/:TableID/", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
 	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
 
 	if appConfig.Env != "prod" {
