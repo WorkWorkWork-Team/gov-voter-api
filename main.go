@@ -46,6 +46,7 @@ func main() {
 	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
 
 	server := httpserver.NewHttpServer()
+	server.Use(handler.Proxy)
 	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
 	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
 	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
