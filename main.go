@@ -45,16 +45,16 @@ func main() {
 	userHandler := handler.NewUserHandler(populationService, jwtService, voteService)
 	authenticationHandler := handler.NewAuthenticateHandler(authenticationService)
 
-	server := httpserver.NewHttpServer()
-	server.Use(handler.Proxy)
-	server.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
-	server.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
-	server.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
-	server.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
+	server := httpserver.NewHttpServer(appConfig.PROXY_URL)
+	api := server.Group(appConfig.PROXY_URL)
+	api.GET("/user/info", handler.AuthorizeJWT(jwtService, appConfig), userHandler.GetUserInfo)
+	api.GET("/validity", handler.AuthorizeJWT(jwtService, appConfig), userHandler.Validity)
+	api.POST("/applyvote", handler.AuthorizeJWT(jwtService, appConfig), userHandler.ApplyVote)
+	api.POST("/auth/login/", authenticationHandler.AuthAndGenerateToken)
 
 	if appConfig.Env != "prod" {
 		devHandler := handler.NewDevHandler(jwtService)
-		devGroup := server.Group("/dev")
+		devGroup := api.Group("/dev")
 		devGroup.GET("/token/:id/", devHandler.NewTestToken)
 	}
 	server.Run(fmt.Sprint(":", appConfig.LISTENING_PORT))

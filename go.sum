@@ -1,5 +1,5 @@
-github.com/WorkWorkWork-Team/common-go v0.3.2 h1:pie9ab+CmVaLt2nVlcP+TQopQ0QTBuVcK62u0orzTFA=
-github.com/WorkWorkWork-Team/common-go v0.3.2/go.mod h1:h6+IS4+IgKyRT6U8/8nouHfKHafJoMb+Zygw944+IBw=
+github.com/WorkWorkWork-Team/common-go v0.3.3 h1:X/Fnz2zHvBi5jXCpI0D2OF+/JyDmYHXhrc5ryyZDQ6o=
+github.com/WorkWorkWork-Team/common-go v0.3.3/go.mod h1:h6+IS4+IgKyRT6U8/8nouHfKHafJoMb+Zygw944+IBw=
 github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d h1:S2NE3iHSwP0XV47EEXL8mWmRdEfGscSJ+7EgePNgt0s=
 github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d/go.mod h1:sGbDF6GwGcLpkNXPUTkMRoywsNa/ol15pxFe6ERfguA=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
