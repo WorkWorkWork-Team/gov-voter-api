@@ -28,7 +28,7 @@ var _ = Describe("Population", func() {
 				mockPopulationRepository.EXPECT().GetPopulationInfo(gomock.Any()).Return(
 					model.Population{
 						CitizenID:   1234,
-						LazerId:     "1234",
+						LazerID:     "1234",
 						Name:        "fuck",
 						Lastname:    "you",
 						Birthday:    time.Now(),
@@ -48,7 +48,7 @@ var _ = Describe("Population", func() {
 			mockPopulationRepository.EXPECT().GetPopulationInfo(gomock.Any()).Return(
 				model.Population{
 					CitizenID:   1234,
-					LazerId:     "1234",
+					LazerID:     "1234",
 					Name:        "fuck",
 					Lastname:    "you",
 					Birthday:    time.Now(),
