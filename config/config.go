@@ -21,6 +21,7 @@ type Config struct {
 	JWT_SECRET_KEY string `envconfig:"JWT_SECRET_KEY"`
 	JWT_ISSUER     string `envconfig:"JWT_ISSUER"`
 	JWT_TTL        int    `envconfig:"JWT_TTL"`
+	PROXY_URL      string `envconfig:"PROXY_URL"`
 }
 
 func Load() Config {
