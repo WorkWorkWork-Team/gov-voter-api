@@ -76,4 +76,3 @@ jobs:
             linux/arm64
           ssh: |
             default
-  
