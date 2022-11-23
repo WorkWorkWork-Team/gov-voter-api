@@ -75,17 +75,4 @@ jobs:
             linux/amd64
             linux/arm64
           ssh: |
-            default
-
-  backup_to_bitbucket:
-    runs-on: ubuntu-latest
-    steps:                                             
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0                                          
-      - uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_repo_url:
-            git clone git@bitbucket.org:softpro-workworkwork/gov-voter-api.git
-          ssh_private_key:                              
-            ${{ secrets.BITBUCKET }}    
+            default    
