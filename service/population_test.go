@@ -1,6 +1,8 @@
-package test
+package service_test
 
 import (
+	"time"
+
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
@@ -25,12 +27,18 @@ var _ = Describe("Population", func() {
 			BeforeEach(func() {
 				mockPopulationRepository.EXPECT().GetPopulationInfo(gomock.Any()).Return(
 					model.Population{
-						CitizenID: 1234,
-						LazerId:   "1234",
-					}, repository.ErrNotFound)
+						CitizenID:   1234,
+						LazerId:     "1234",
+						Name:        "fuck",
+						Lastname:    "you",
+						Birthday:    time.Now(),
+						Nationality: "thai",
+						DistricID:   123145,
+					}, nil)
 			})
 			It("Should return user information with out error", func() {
-				Expect(populationService.GetPopulationInformation("")).Should(BeNil())
+				_, err := populationService.GetPopulationInformation("1234")
+				Expect(err).Should(BeNil())
 			})
 		})
 	})
@@ -39,12 +47,18 @@ var _ = Describe("Population", func() {
 		BeforeEach(func() {
 			mockPopulationRepository.EXPECT().GetPopulationInfo(gomock.Any()).Return(
 				model.Population{
-					CitizenID: 0,
-					LazerId:   "",
+					CitizenID:   1234,
+					LazerId:     "1234",
+					Name:        "fuck",
+					Lastname:    "you",
+					Birthday:    time.Now(),
+					Nationality: "thai",
+					DistricID:   123145,
 				}, repository.ErrNotFound)
 		})
 		It("Should return base model data with error", func() {
-			Expect(populationService.GetPopulationInformation("")).Should(Equal(service.ErrUserNotFound))
+			_, err := populationService.GetPopulationInformation("1234")
+			Expect(err).Should(Equal(repository.ErrNotFound))
 		})
 	})
 })
