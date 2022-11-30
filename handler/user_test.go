@@ -3,9 +3,11 @@ package handler_test
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"time"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/handler"
@@ -13,34 +15,49 @@ import (
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var (
-	TestUserCitizenID   string = "1234567891235"
-	TestJWTSecretKey    string = "key"
-	TestJWTIssuer       string = "Tester"
-	TestJWTTTL          int    = 10
-	UserHandler         *handler.UserHandler
-	AuthenticateHandler *handler.AuthenticateHandler
+	TestUserCitizenID     string = "1234567891235"
+	TestUserLazerID       string = "CCAADD"
+	TestJWTSecretKey      string = "key"
+	TestJWTIssuer         string = "Tester"
+	TestJWTTTL            int    = 10
+	UserHandler           *handler.UserHandler
+	AuthenticateHandler   *handler.AuthenticateHandler
+	AuthenticationService service.AuthenticationService
+	JWTService            service.JWTService
 )
+
+func NewGinTestContext() (*gin.Context, *httptest.ResponseRecorder, *gin.Engine) {
+	res := httptest.NewRecorder()
+	c, r := gin.CreateTestContext(res)
+	return c, res, r
+}
+
+type AuthToken struct {
+	Token string `json:"token"`
+}
 
 var _ = Describe("User Integration Test", Label("integration"), func() {
 	BeforeEach(func() {
+		gin.SetMode(gin.TestMode)
 		populationRepository := repository.NewPopulationRepository(MySQLConnection)
 		applyVoteRepository := repository.NewApplyVoteRepository(MySQLConnection)
 
 		// New Services
 
-		jwtService := service.NewJWTService(TestJWTSecretKey, TestJWTIssuer, time.Duration(TestJWTTTL)*time.Second)
+		JWTService = service.NewJWTService(TestJWTSecretKey, TestJWTIssuer, time.Duration(TestJWTTTL)*time.Second)
 		voteService := service.NewVoteService(applyVoteRepository)
-		authenticationService := service.NewAuthenticationService(jwtService, populationRepository)
+		AuthenticationService = service.NewAuthenticationService(JWTService, populationRepository)
 		populationService := service.NewPopulationService(populationRepository)
 
 		// New Handler
-		UserHandler = handler.NewUserHandler(populationService, jwtService, voteService)
-		AuthenticateHandler = handler.NewAuthenticateHandler(authenticationService)
+		UserHandler = handler.NewUserHandler(populationService, JWTService, voteService)
+		AuthenticateHandler = handler.NewAuthenticateHandler(AuthenticationService)
 	})
 
 	Context("Validity API", func() {
@@ -55,13 +72,12 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					Expect(applyVoteLength).To(Equal(0))
 
 					// Call API
-					res := httptest.NewRecorder()
-					c, _ := gin.CreateTestContext(res)
-					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					c, _, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestUserCitizenID)
 					UserHandler.Validity(c)
 
 					// Expect API return 200
-					Expect(res.Result().StatusCode).To(Equal(http.StatusOK))
+					Expect(c.Writer.Status()).To(Equal(http.StatusOK))
 				})
 			})
 
@@ -69,24 +85,67 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 				It("should return 400 Unsuccess.", func() {
 					// Expect no user in voted table
 					var applyVote model.ApplyVote
-					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE CitizenID=?", TestUserCitizenID)
 					Expect(err).To(Equal(sql.ErrNoRows))
 
 					// Insert user to voted table
-					//row, err := MySQLConnection.Exec("INSERT INTO `ApplyVote` (citizenID) VALUES (?)", TestUserCitizenID)
-					//fmt.Println(row)
-					//fmt.Println(err)
-					//Expect(err).To(BeNil())
-
+					_, err = MySQLConnection.Exec("INSERT INTO `ApplyVote` (CitizenID) VALUES (?)", TestUserCitizenID)
+					Expect(err).To(BeNil())
 					// Call API
-					res := httptest.NewRecorder()
-					c, _ := gin.CreateTestContext(res)
-					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					c, _, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestUserCitizenID)
 					UserHandler.Validity(c)
-
 					// Expect API return 400
-					Expect(res.Result().StatusCode).To(Equal(http.StatusBadRequest))
+					Expect(c.Writer.Status()).To(Equal(http.StatusBadRequest))
+					// Clear user from ApplyVote table
+					_, err = MySQLConnection.Exec("DELETE FROM `ApplyVote` WHERE CitizenID=?", TestUserCitizenID)
+					Expect(err).To(BeNil())
 				})
+			})
+		})
+	})
+
+	Context("Authentication API", func() {
+		When("user provide incorrect user credential", func() {
+			It("should return 401", func() {
+				_, resultWriter, r := NewGinTestContext()
+				r.POST("/api", AuthenticateHandler.AuthAndGenerateToken)
+				body := fmt.Sprintf(`{
+					"citizenID": "%s",
+					"lazerID": "I'mSurlyFailed"
+				}`, TestUserCitizenID)
+				reader := strings.NewReader(body)
+				req, _ := http.NewRequest("POST", "/api", reader)
+				r.ServeHTTP(resultWriter, req)
+
+				Expect(resultWriter.Result().StatusCode).To(Equal(http.StatusUnauthorized))
+			})
+		})
+		When("user provide correct user credential", func() {
+			It("should return 200", func() {
+				_, resultWriter, r := NewGinTestContext()
+				r.POST("/api", AuthenticateHandler.AuthAndGenerateToken)
+				body := fmt.Sprintf(`{
+					"citizenID": "%s",
+					"lazerID": "%s"
+				}`, TestUserCitizenID, TestUserLazerID)
+				reader := strings.NewReader(body)
+				req, _ := http.NewRequest("POST", "/api", reader)
+				r.ServeHTTP(resultWriter, req)
+
+				var result AuthToken
+				resultByte, _ := io.ReadAll(resultWriter.Result().Body)
+				err := json.Unmarshal(resultByte, &result)
+				Expect(err).To(BeNil())
+
+				Expect(resultWriter.Result().StatusCode).To(Equal(http.StatusOK))
+				validatedToken, err := JWTService.ValidateToken(result.Token)
+				Expect(err).To(BeNil())
+				Expect(validatedToken.Valid).To(BeTrue())
+				Expect(validatedToken.Claims.(jwt.MapClaims)["iss"]).To(Equal(TestJWTIssuer))
+				// Expect(strconv.Atoi(validatedToken.Claims.(jwt.MapClaims)["iat"])).To(Equal(TestUserCitizenID))
+				// Expect(validatedToken.Claims.(jwt.MapClaims)["sub"]).To(Equal(TestUserCitizenID))
+
 			})
 		})
 	})
