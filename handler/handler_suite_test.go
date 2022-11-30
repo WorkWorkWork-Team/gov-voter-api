@@ -38,6 +38,7 @@ var (
 
 var _ = BeforeSuite(func() {
 	fmt.Println("🟢 BeforeSuite Integration test")
+	gin.SetMode(gin.TestMode)
 	MySQLContainer = setupMySQL()
 	mysql, err := databasemysql.NewDbConnection(databasemysql.Config{
 		Hostname:     fmt.Sprint(MySQLContainer.Host, ":", MySQLContainer.Port),

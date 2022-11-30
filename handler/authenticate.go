@@ -9,17 +9,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type authenticateHandler struct {
+type AuthenticateHandler struct {
 	service service.AuthenticationService
 }
 
-func NewAuthenticateHandler(service service.AuthenticationService) authenticateHandler {
-	return authenticateHandler{
+func NewAuthenticateHandler(service service.AuthenticationService) *AuthenticateHandler {
+	return &AuthenticateHandler{
 		service: service,
 	}
 }
 
-func (a *authenticateHandler) AuthAndGenerateToken(g *gin.Context) {
+func (a *AuthenticateHandler) AuthAndGenerateToken(g *gin.Context) {
 	var body model.AuthenticateBody
 	err := g.BindJSON(&body)
 	if err != nil {
