@@ -1,6 +1,8 @@
 package handler_test
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -53,21 +55,36 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 
 					// Call API
 					res := httptest.NewRecorder()
-					c, r := gin.CreateTestContext(res)
+					c, _ := gin.CreateTestContext(res)
 					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
-
-					r.POST("/api", UserHandler.Validity)
-
-					r.ServeHTTP(res, c.Request)
+					UserHandler.Validity(c)
 
 					// Expect API return 200
 					Expect(res.Result().StatusCode).To(Equal(http.StatusOK))
+				})
+			})
 
-					// Expect no user in voted table.
-					err = MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
-					Expect(err).ShouldNot(HaveOccurred())
-					applyVoteLength = len(applyVoteList)
-					Expect(applyVoteLength).To(Equal(0))
+			When("the user is in the voted table", func() {
+				It("should return 400 Unsuccess.", func() {
+					// Expect no user in voted table
+					var applyVote model.ApplyVote
+					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).To(Equal(sql.ErrNoRows))
+
+					// Insert user to voted table
+					row, err := MySQLConnection.Exec("INSERT INTO `ApplyVote` (citizenID) VALUES (?)", TestUserCitizenID)
+					fmt.Println(row)
+					fmt.Println(err)
+					Expect(err).To(BeNil())
+
+					// Call API
+					res := httptest.NewRecorder()
+					c, _ := gin.CreateTestContext(res)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.Validity(c)
+
+					// Expect API return 400
+					Expect(res.Result().StatusCode).To(Equal(http.StatusBadRequest))
 				})
 			})
 		})

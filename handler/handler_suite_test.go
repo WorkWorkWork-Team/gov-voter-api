@@ -65,7 +65,7 @@ func setupMySQL() ContainerAddress {
 	result := exp.FindAllStringSubmatch(currentDirectory, -1)
 
 	containerReq := testcontainers.ContainerRequest{
-		Image:        "mysql:latest",
+		Image:        "mysql:8.0.31",
 		ExposedPorts: []string{"3306/tcp"},
 		Env: map[string]string{
 			"MYSQL_ROOT_PASSWORD": "my-secret-pw",
