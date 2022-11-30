@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"errors"
+
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
@@ -11,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Vote", func() {
+var _ = Describe("Vote", Label("unit"), func() {
 	var ctrl *gomock.Controller
 	var mockVoteRepository *mock_repository.MockApplyVoteRepository
 	var voteService service.VoteService
