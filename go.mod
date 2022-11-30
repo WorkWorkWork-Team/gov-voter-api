@@ -3,7 +3,7 @@ module github.com/WorkWorkWork-Team/gov-voter-api
 go 1.19
 
 require (
-	github.com/WorkWorkWork-Team/common-go v0.3.2
+	github.com/WorkWorkWork-Team/common-go v0.3.3
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.6.0
@@ -40,7 +40,6 @@ require (
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
