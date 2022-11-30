@@ -31,17 +31,6 @@ func (a *applyVoteRepository) ApplyVote(citizenID string) error {
 }
 
 func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
-	var applyVoteList []model.ApplyVote
-	err = a.mysql.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", citizenID)
-	if err != nil {
-		return applyVote, err
-	}
-
-	applyVoteLength := len(applyVoteList)
-	if applyVoteLength == 0 {
-		return applyVote, ErrNotFound
-	} else if applyVoteLength > 1 {
-		return applyVote, ErrFoundMoreThanOne
-	}
-	return applyVoteList[0], nil
+	err = a.mysql.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE CitizenID=?", citizenID)
+	return applyVote, err
 }

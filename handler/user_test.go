@@ -2,7 +2,6 @@ package handler_test
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -17,16 +16,19 @@ import (
 )
 
 var (
-	TestUserCitizenID   string = "1234567891235"
-	TestJWTSecretKey    string = "key"
-	TestJWTIssuer       string = "Tester"
-	TestJWTTTL          int    = 10
-	UserHandler         *handler.UserHandler
-	AuthenticateHandler *handler.AuthenticateHandler
+	TestUserCitizenID     string = "1234567891235"
+	TestUserLazerID       string = "CCAADD"
+	TestJWTSecretKey      string = "key"
+	TestJWTIssuer         string = "Tester"
+	TestJWTTTL            int    = 10
+	UserHandler           *handler.UserHandler
+	AuthenticateHandler   *handler.AuthenticateHandler
+	AuthenticationService service.AuthenticationService
 )
 
 var _ = Describe("User Integration Test", Label("integration"), func() {
 	BeforeEach(func() {
+		gin.SetMode(gin.TestMode)
 		populationRepository := repository.NewPopulationRepository(MySQLConnection)
 		applyVoteRepository := repository.NewApplyVoteRepository(MySQLConnection)
 
@@ -34,12 +36,12 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 
 		jwtService := service.NewJWTService(TestJWTSecretKey, TestJWTIssuer, time.Duration(TestJWTTTL)*time.Second)
 		voteService := service.NewVoteService(applyVoteRepository)
-		authenticationService := service.NewAuthenticationService(jwtService, populationRepository)
+		AuthenticationService = service.NewAuthenticationService(jwtService, populationRepository)
 		populationService := service.NewPopulationService(populationRepository)
 
 		// New Handler
 		UserHandler = handler.NewUserHandler(populationService, jwtService, voteService)
-		AuthenticateHandler = handler.NewAuthenticateHandler(authenticationService)
+		AuthenticateHandler = handler.NewAuthenticateHandler(AuthenticationService)
 	})
 
 	Context("Validity API", func() {
@@ -56,11 +58,11 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					// Call API
 					res := httptest.NewRecorder()
 					c, _ := gin.CreateTestContext(res)
-					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					c.AddParam("CitizenID", TestUserCitizenID)
 					UserHandler.Validity(c)
 
 					// Expect API return 200
-					Expect(res.Result().StatusCode).To(Equal(http.StatusOK))
+					Expect(c.Writer.Status()).To(Equal(http.StatusOK))
 				})
 			})
 
@@ -68,23 +70,25 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 				It("should return 400 Unsuccess.", func() {
 					// Expect no user in voted table
 					var applyVote model.ApplyVote
-					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE CitizenID=?", TestUserCitizenID)
 					Expect(err).To(Equal(sql.ErrNoRows))
 
 					// Insert user to voted table
-					row, err := MySQLConnection.Exec("INSERT INTO `ApplyVote` (citizenID) VALUES (?)", TestUserCitizenID)
-					fmt.Println(row)
-					fmt.Println(err)
+					_, err = MySQLConnection.Exec("INSERT INTO `ApplyVote` (CitizenID) VALUES (?)", TestUserCitizenID)
 					Expect(err).To(BeNil())
 
 					// Call API
 					res := httptest.NewRecorder()
 					c, _ := gin.CreateTestContext(res)
-					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					c.AddParam("CitizenID", TestUserCitizenID)
 					UserHandler.Validity(c)
 
 					// Expect API return 400
-					Expect(res.Result().StatusCode).To(Equal(http.StatusBadRequest))
+					Expect(c.Writer.Status()).To(Equal(http.StatusBadRequest))
+
+					// Clear user from ApplyVote table
+					_, err = MySQLConnection.Exec("DELETE FROM `ApplyVote` WHERE CitizenID=?", TestUserCitizenID)
+					Expect(err).To(BeNil())
 				})
 			})
 		})
