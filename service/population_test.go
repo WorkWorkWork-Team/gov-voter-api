@@ -49,8 +49,8 @@ var _ = Describe("Population", func() {
 				model.Population{
 					CitizenID:   1234,
 					LazerID:     "1234",
-					Name:        "fuck",
-					Lastname:    "you",
+					Name:        "name",
+					Lastname:    "lastname",
 					Birthday:    time.Now(),
 					Nationality: "thai",
 					DistricID:   123145,
