@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
 
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
@@ -27,6 +28,9 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 
 func (a *applyVoteRepository) ApplyVote(citizenID string) error {
 	_, err := a.mysql.Query("INSERT INTO ApplyVote (CitizenID) VALUES (?)", citizenID)
+	if err != nil {
+		logrus.Error(err)
+	}
 	return err
 }
 
