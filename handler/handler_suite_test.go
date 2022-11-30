@@ -46,7 +46,7 @@ func setupMySQL() ContainerAddress {
 	containerReq := testcontainers.ContainerRequest{
 		Image:        "mysql:latest",
 		ExposedPorts: []string{"3306/tcp"},
-		WaitingFor:   wait.ForLog("Database files initialized").WithStartupTimeout(time.Second * 10),
+		WaitingFor:   wait.ForLog("started").WithStartupTimeout(time.Second * 10),
 	}
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
