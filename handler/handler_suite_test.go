@@ -24,10 +24,6 @@ func TestHandler(t *testing.T) {
 	RunSpecs(t, "Handler Suite")
 }
 
-var (
-	MySQLConnection *sqlx.DB
-)
-
 type ContainerAddress struct {
 	Host      string
 	Port      string
@@ -35,8 +31,9 @@ type ContainerAddress struct {
 }
 
 var (
-	MySQLContainer ContainerAddress
-	Engine         *gin.Engine
+	MySQLConnection *sqlx.DB
+	MySQLContainer  ContainerAddress
+	Engine          *gin.Engine
 )
 
 var _ = BeforeSuite(func() {
@@ -58,7 +55,7 @@ var _ = AfterSuite(func() {
 })
 
 func setupMySQL() ContainerAddress {
-	name := "mongo"
+	name := "mysql"
 	ctx := context.Background()
 	currentDirectory, err := os.Getwd()
 	Expect(err).To(BeNil())
