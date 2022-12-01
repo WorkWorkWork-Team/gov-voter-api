@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
@@ -43,5 +44,5 @@ func (v *voteService) CheckValidity(citizenID string) bool {
 
 	_, err := v.applyVoteRepository.GetApplyVoteByCitizenID(citizenID)
 	logrus.Info("GetApplyVoteByCitizenID focused err: ", err)
-	return errors.Is(err, repository.ErrNotFound)
+	return errors.Is(err, sql.ErrNoRows)
 }

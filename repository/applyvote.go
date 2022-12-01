@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
 
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
 	"github.com/jmoiron/sqlx"
@@ -27,21 +28,13 @@ func NewApplyVoteRepository(mysql *sqlx.DB) ApplyVoteRepository {
 
 func (a *applyVoteRepository) ApplyVote(citizenID string) error {
 	_, err := a.mysql.Query("INSERT INTO ApplyVote (CitizenID) VALUES (?)", citizenID)
+	if err != nil {
+		logrus.Error(err)
+	}
 	return err
 }
 
 func (a *applyVoteRepository) GetApplyVoteByCitizenID(citizenID string) (applyVote model.ApplyVote, err error) {
-	var applyVoteList []model.ApplyVote
-	err = a.mysql.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", citizenID)
-	if err != nil {
-		return applyVote, err
-	}
-
-	applyVoteLength := len(applyVoteList)
-	if applyVoteLength == 0 {
-		return applyVote, ErrNotFound
-	} else if applyVoteLength > 1 {
-		return applyVote, ErrFoundMoreThanOne
-	}
-	return applyVoteList[0], nil
+	err = a.mysql.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE CitizenID=?", citizenID)
+	return applyVote, err
 }

@@ -1,9 +1,9 @@
 package service_test
 
 import (
-	"errors"
+	"database/sql"
+
 	model "github.com/WorkWorkWork-Team/gov-voter-api/models"
-	"github.com/WorkWorkWork-Team/gov-voter-api/repository"
 	"github.com/WorkWorkWork-Team/gov-voter-api/service"
 	"github.com/WorkWorkWork-Team/gov-voter-api/test/mock_repository"
 	"github.com/golang/mock/gomock"
@@ -11,7 +11,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Vote", func() {
+var (
+	TestCitizenID string = "1234"
+)
+
+var _ = Describe("Vote", Label("unit"), func() {
 	var ctrl *gomock.Controller
 	var mockVoteRepository *mock_repository.MockApplyVoteRepository
 	var voteService service.VoteService
@@ -26,51 +30,51 @@ var _ = Describe("Vote", func() {
 		Context("With right condition", func() {
 			BeforeEach(func() {
 				mockVoteRepository.EXPECT().
-					ApplyVote(gomock.Any()).
+					ApplyVote(gomock.Eq(TestCitizenID)).
 					Return(nil)
 				mockVoteRepository.EXPECT().
-					GetApplyVoteByCitizenID(gomock.Any()).
+					GetApplyVoteByCitizenID(gomock.Eq(TestCitizenID)).
 					Return(
 						model.ApplyVote{
 							ID: 1,
-						}, repository.ErrNotFound)
+						}, sql.ErrNoRows).Times(1)
 			})
 			It("Should not return error", func() {
-				Expect(voteService.ApplyVote("")).Should(BeNil())
+				Expect(voteService.ApplyVote(TestCitizenID)).Should(BeNil())
 			})
 		})
 
 		Context("With user already voted", func() {
 			BeforeEach(func() {
 				mockVoteRepository.EXPECT().
-					ApplyVote(gomock.Any()).
+					ApplyVote(gomock.Eq(TestCitizenID)).
 					Return(nil).Times(0)
 				mockVoteRepository.EXPECT().
-					GetApplyVoteByCitizenID(gomock.Any()).
+					GetApplyVoteByCitizenID(gomock.Eq(TestCitizenID)).
 					Return(
 						model.ApplyVote{
 							ID: 1,
-						}, nil).AnyTimes()
+						}, nil).Times(1)
 			})
 			It("Should return user already applied error", func() {
-				Expect(voteService.ApplyVote("")).Should(Equal(service.ErrUserAlreadyApplied))
+				Expect(voteService.ApplyVote(TestCitizenID)).Should(Equal(service.ErrUserAlreadyApplied))
 			})
 		})
 
 		Context("Failed to insert user to database", func() {
 			BeforeEach(func() {
 				mockVoteRepository.EXPECT().
-					ApplyVote(gomock.Any()).
-					Return(errors.New(""))
+					ApplyVote(gomock.Eq(TestCitizenID)).
+					Return(sql.ErrConnDone)
 				mockVoteRepository.EXPECT().
-					GetApplyVoteByCitizenID(gomock.Any()).
+					GetApplyVoteByCitizenID(gomock.Eq(TestCitizenID)).
 					Return(
 						model.ApplyVote{
 							ID: 1,
-						}, repository.ErrNotFound).AnyTimes()
+						}, sql.ErrNoRows).Times(1)
 			})
 			It("Should return user already applied error", func() {
-				Expect(voteService.ApplyVote("")).Should(Equal(errors.New("")))
+				Expect(voteService.ApplyVote(TestCitizenID)).Should(Equal(sql.ErrConnDone))
 			})
 		})
 	})
