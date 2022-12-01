@@ -22,6 +22,7 @@ import (
 
 var (
 	TestUserCitizenID     string = "1234567891235"
+	TestNotExistCitizenID string = "1"
 	TestUserLazerID       string = "CCAADD"
 	TestJWTSecretKey      string = "key"
 	TestJWTIssuer         string = "Tester"
@@ -168,8 +169,7 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					Expect(populationLength).To(Equal(1))
 
 					// Call API
-					res := httptest.NewRecorder()
-					c, _ := gin.CreateTestContext(res)
+					c, res, _ := NewGinTestContext()
 					c.AddParam("CitizenID", TestUserCitizenID)
 					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
 					UserHandler.ApplyVote(c)
@@ -211,8 +211,7 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					Expect(populationLength).To(Equal(1))
 
 					// API Calls
-					res := httptest.NewRecorder()
-					c, _ := gin.CreateTestContext(res)
+					c, res, _ := NewGinTestContext()
 					c.AddParam("CitizenID", TestUserCitizenID)
 					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
 					UserHandler.ApplyVote(c)
@@ -245,8 +244,7 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					Expect(populationLength).To(Equal(1))
 
 					// Call API
-					res := httptest.NewRecorder()
-					c, _ := gin.CreateTestContext(res)
+					c, res, _ := NewGinTestContext()
 					c.AddParam("CitizenID", TestUserCitizenID)
 					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
 					UserHandler.GetUserInfo(c)
@@ -259,7 +257,23 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					Expect(err).ShouldNot(HaveOccurred())
 
 					Expect(populationInfo).To(Equal(populationList[0]))
+				})
+			})
+			When("get user information with invalid citizen ID", func() {
+				It("Should return not found", func() {
+					var populationList []model.Population
 
+					err := MySQLConnection.Select(&populationList, "SELECT * FROM `Population` WHERE citizenID=?", TestNotExistCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					populationLength := len(populationList)
+					Expect(populationLength).To(Equal(0))
+
+					// Call API
+					c, res, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestNotExistCitizenID)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.GetUserInfo(c)
+					Expect(res.Result().StatusCode).To(Equal(http.StatusNotFound))
 				})
 			})
 		})
