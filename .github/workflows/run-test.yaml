@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  run-test:
+  run-unit-test:
     runs-on: ubuntu-latest
     steps:
       # Fetch all repository details (Including tag for semver).
@@ -38,6 +38,25 @@ jobs:
         shell: bash
         run: |
           make unit-test
+  run-integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "^1.19"
+      - uses: docker-practice/actions-setup-docker@master
+      - run: |
+          set -x
+          docker version
+      - name: Install Test Dependency
+        shell: bash
+        run: |
+          go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.3.1
+          go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.3.1
+          go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.3.1
+          go install github.com/onsi/ginkgo/v2/ginkgo@v2.5.0
+          go get github.com/onsi/gomega/...
       - name: Run Integration-Test
         shell: bash
         run: |
