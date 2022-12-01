@@ -24,7 +24,7 @@ jobs:
           go get github.com/onsi/ginkgo/v2/ginkgo/generators@v2.3.1
           go get github.com/onsi/ginkgo/v2/ginkgo/internal@v2.3.1
           go get github.com/onsi/ginkgo/v2/ginkgo/labels@v2.3.1
-          go install github.com/onsi/ginkgo/v2/ginkgo
+          go install github.com/onsi/ginkgo/v2/ginkgo@v2.5.0
           go get github.com/onsi/gomega/...
 
       # Run all test in Repo
@@ -34,7 +34,11 @@ jobs:
           go mod tidy
 
       # Run all test in Repo
-      - name: Run Test
+      - name: Run Unit-Test
         shell: bash
         run: |
           make unit-test
+      - name: Run Integration-Test
+        shell: bash
+        run: |
+          make integration-test
