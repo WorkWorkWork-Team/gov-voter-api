@@ -142,9 +142,25 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 				Expect(err).To(BeNil())
 				Expect(validatedToken.Valid).To(BeTrue())
 				Expect(validatedToken.Claims.(jwt.MapClaims)["iss"]).To(Equal(TestJWTIssuer))
-				// Expect(strconv.Atoi(validatedToken.Claims.(jwt.MapClaims)["iat"])).To(Equal(TestUserCitizenID))
-				// Expect(validatedToken.Claims.(jwt.MapClaims)["sub"]).To(Equal(TestUserCitizenID))
+				Expect(validatedToken.Claims.(jwt.MapClaims)["exp"]).To(BeNumerically("==", time.Now().Add(time.Duration(TestJWTTTL)*time.Second).Unix()))
+				Expect(validatedToken.Claims.(jwt.MapClaims)["CitizenID"]).To(Equal(TestUserCitizenID))
+				Expect(validatedToken.Claims.(jwt.MapClaims)["iat"]).To(BeNumerically("==", time.Now().Unix()))
+			})
+		})
 
+		When("user provide incorrect user credential", func() {
+			It("should return 401", func() {
+				_, resultWriter, r := NewGinTestContext()
+				r.POST("/api", AuthenticateHandler.AuthAndGenerateToken)
+				body := fmt.Sprintf(`{
+					"citizenID": "%s",
+					"lazerID": "I'mSurlyFailed"
+				}`, TestUserCitizenID)
+				reader := strings.NewReader(body)
+				req, _ := http.NewRequest("POST", "/api", reader)
+				r.ServeHTTP(resultWriter, req)
+
+				Expect(resultWriter.Result().StatusCode).To(Equal(http.StatusUnauthorized))
 			})
 		})
 	})
