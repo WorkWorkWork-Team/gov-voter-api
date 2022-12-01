@@ -22,6 +22,7 @@ import (
 
 var (
 	TestUserCitizenID     string = "1234567891235"
+	TestNotExistCitizenID string = "1"
 	TestUserLazerID       string = "CCAADD"
 	TestJWTSecretKey      string = "key"
 	TestJWTIssuer         string = "Tester"
@@ -87,6 +88,7 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 					var applyVote model.ApplyVote
 					err := MySQLConnection.Get(&applyVote, "SELECT * FROM `ApplyVote` WHERE CitizenID=?", TestUserCitizenID)
 					Expect(err).To(Equal(sql.ErrNoRows))
+
 					// Insert user to voted table
 					_, err = MySQLConnection.Exec("INSERT INTO `ApplyVote` (CitizenID) VALUES (?)", TestUserCitizenID)
 					Expect(err).To(BeNil())
@@ -161,6 +163,134 @@ var _ = Describe("User Integration Test", Label("integration"), func() {
 				r.ServeHTTP(resultWriter, req)
 
 				Expect(resultWriter.Result().StatusCode).To(Equal(http.StatusUnauthorized))
+			})
+		})
+	})
+
+	Context("Applyvote API", func() {
+		Context("Database have population data", func() {
+			When("the user is not in the voted table", func() {
+				It("Should return success", func() {
+					// Check Condition
+					var applyVoteList []model.ApplyVote
+					var populationList []model.Population
+					err := MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					applyVoteLength := len(applyVoteList)
+					Expect(applyVoteLength).To(Equal(0))
+
+					err = MySQLConnection.Select(&populationList, "SELECT * FROM `Population` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					populationLength := len(populationList)
+					Expect(populationLength).To(Equal(1))
+
+					// Call API
+					c, res, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestUserCitizenID)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.ApplyVote(c)
+
+					Expect(res.Result().StatusCode).To(Equal(http.StatusOK))
+
+					// Expect no user in voted table.
+					err = MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					applyVoteLength = len(applyVoteList)
+					Expect(applyVoteLength).To(Equal(1))
+
+					// Tear down
+					_, err = MySQLConnection.Exec("DELETE FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					err = MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					applyVoteLength = len(applyVoteList)
+					Expect(applyVoteLength).To(Equal(0))
+				})
+			})
+			When("the user is in the voted table", func() {
+				It("Should return bad request", func() {
+					var applyVoteList []model.ApplyVote
+					var populationList []model.Population
+
+					_, err := MySQLConnection.Exec("INSERT INTO `ApplyVote` (citizenID) VALUES (?)", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					err = MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					applyVoteLength := len(applyVoteList)
+					Expect(applyVoteLength).To(Equal(1))
+
+					err = MySQLConnection.Select(&populationList, "SELECT * FROM `Population` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					populationLength := len(populationList)
+					Expect(populationLength).To(Equal(1))
+
+					// API Calls
+					c, res, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestUserCitizenID)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.ApplyVote(c)
+
+					Expect(res.Result().StatusCode).To(Equal(http.StatusBadRequest))
+
+					// Tear down
+					_, err = MySQLConnection.Exec("DELETE FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					err = MySQLConnection.Select(&applyVoteList, "SELECT * FROM `ApplyVote` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					applyVoteLength = len(applyVoteList)
+					Expect(applyVoteLength).To(Equal(0))
+				})
+			})
+		})
+	})
+
+	Context("GetUserInfo API", func() {
+		Context("Database have population data", func() {
+			When("get user information", func() {
+				It("Should return success with body", func() {
+					var populationList []model.Population
+					var populationInfo model.Population
+
+					err := MySQLConnection.Select(&populationList, "SELECT * FROM `Population` WHERE citizenID=?", TestUserCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					populationLength := len(populationList)
+					Expect(populationLength).To(Equal(1))
+
+					// Call API
+					c, res, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestUserCitizenID)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.GetUserInfo(c)
+					Expect(res.Result().StatusCode).To(Equal(http.StatusOK))
+
+					// Get response body
+					body, err := io.ReadAll(res.Body)
+					Expect(err).ShouldNot(HaveOccurred())
+					err = json.Unmarshal(body, &populationInfo)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					Expect(populationInfo).To(Equal(populationList[0]))
+				})
+			})
+			When("get user information with invalid citizen ID", func() {
+				It("Should return not found", func() {
+					var populationList []model.Population
+
+					err := MySQLConnection.Select(&populationList, "SELECT * FROM `Population` WHERE citizenID=?", TestNotExistCitizenID)
+					Expect(err).ShouldNot(HaveOccurred())
+					populationLength := len(populationList)
+					Expect(populationLength).To(Equal(0))
+
+					// Call API
+					c, res, _ := NewGinTestContext()
+					c.AddParam("CitizenID", TestNotExistCitizenID)
+					c.Request = httptest.NewRequest(http.MethodPost, "/api", nil)
+					UserHandler.GetUserInfo(c)
+					Expect(res.Result().StatusCode).To(Equal(http.StatusNotFound))
+				})
 			})
 		})
 	})
